@@ -1,20 +1,20 @@
 ---
 layout: getting_started
-title: 3 Modules
+title: 3 モジュール
 guide: 3
 total_guides: 7
 ---
 
 # {{ page.title }}
 
-In Elixir, you can group several functions into a module. In the previous chapter, for example, we invoked functions from the [module `List`](/docs/stable/List.html):
+エリクサーでは，いくつかの機能をモジュールにまとめることができます．例えば前章では，私たちは[`List`モジュール](/docs/stable/List.html)の関数を呼び出しました:
 
 ```iex
 iex> List.flatten [1,[2],3]
 [1, 2, 3]
 ```
 
-In order to create our own modules in Elixir, all we have to do is to call the `defmodule` function and use `def` to define our functions:
+エリクサーで独自のモジュールを作成するために，行わなければならないことは`defmodule`関数を呼び出すことと`def`関数を関数の定義に使うことです:
 
 ```iex
 iex> defmodule Math do
@@ -27,11 +27,11 @@ iex> Math.sum(1, 2)
 3
 ```
 
-Before diving into modules, let's first have a brief overview about compilation.
+モジュールに入る前に，最初にコンパイルについての簡単な概要を掴んでみましょう．
 
-## 3.1 Compilation
+## 3.1 コンパイル
 
-Most of the time it is convenient to write modules into files so they can be compiled and reused. Let's assume we have a file named `math.ex` with the following contents:
+コンパイルや再利用ができるようになるため，たいていの場合はモジュールをファイルに書く方が便利です．`math.ex`というファイルに以下の内容が書かれているとしましょう:
 
 ```elixir
 defmodule Math do
@@ -41,32 +41,32 @@ defmodule Math do
 end
 ```
 
-This file can be compiled using `elixirc` (remember, if you installed Elixir from a package or compiled it, `elixirc` will be inside the bin directory):
+このファイルは，`elixirc`を使用してコンパイルすることができます(あなたがパッケージからエリクサーをインストールしたり，コンパイルしてインストールした場合，`elixirc`はbinディレクトリの中にあることを思い出してください):
 
     elixirc math.ex
 
-This will generate a file named `Elixir.Math.beam` containing the bytecode for the defined module. Now, if we start `iex` again, our module definition will be available (considering `iex` is being started in the same directory the bytecode file is):
+そうすると定義されたモジュールをバイトコードとして含む`Elixir.Math.beam`という名前のファイルが生成されます． さて，`iex`を再び起動すると，私たちが定義したモジュールが使えるようになります(`iex`は同じディレクトリにバイトコードファイルがあると起動しておくように考慮されています):
 
 ```iex
 iex> Math.sum(1, 2)
 3
 ```
 
-Elixir projects are usually organized into three directories:
+エリクサープロジェクトは通常，3つのディレクトリで編成されています:
 
-* ebin - contains the compiled bytecode
-* lib - contains elixir code (usually `.ex` files)
-* test - contains tests (usually `.exs` files)
+* ebin - コンパイルされたバイトコードが含まれています
+* lib - エリクサーのコードが含まれています(通常は`.ex`ファイル)
+* test - テスト-テストが含まれています(通常は`.exs`ファイル)
 
-Whenever interacting with an existing library, you may need to explicitly tell Elixir to look for bytecode in the `ebin` directory:
+既存のライブラリと対話するときは，バイトコードを探せるようにエリクサーに明示的に`ebin`ディレクトリの場所を伝える必要があります:
 
     iex -pa ebin
 
-Where `-pa` stands for `path append`. The same option can also be passed to `elixir` and `elixirc` executables. You can execute `elixir` and `elixirc` without arguments to get a list of options.
+`-pa`は`path append`の略です．同じオプションを`elixir`や`elixirc`に渡すこともできます．`elixir`や`elixirc`に引数を渡さずに実行すると，オプションの一覧を取得できます．
 
-## 3.2 Scripted mode
+## 3.2 スクリプトモード
 
-In addition to the Elixir file `.ex`, Elixir also supports `.exs` files for scripting. Elixir treats both files exactly the same way, the only difference is in intention. `.ex` files are meant to be compiled while `.exs` files are used for scripting, without the need for compilation. For instance, one can create a file called `math.exs`:
+エリクサーは`.ex`形式のファイルに加えて ，スクリプト用として`.exs`形式にも対応しています．エリクサーは，両方のファイルをまったく同じように扱い，唯一の違いは，どのように扱うかという意図です．`.ex`ファイルはコンパイルされ，`.exs`ファイルは，コンパイルを必要とせずに，スクリプトとして利用されます．例えば，`math.exs`と呼ばれるファイルを作成してみます:
 
 ```elixir
 defmodule Math do
@@ -79,15 +79,15 @@ end
 IO.puts to_string(Math.sum(1, 2))
 ```
 
-And execute it as:
+そしてそれを実行します:
 
     elixir math.exs
 
-The file will be compiled in memory and executed, printing "3" as the result. No bytecode file will be created.
+ファイルはメモリ上でコンパイルされて実行され，結果として"3"と表示します．バイトコードファイルは作成されません．
 
-## 3.3 Functions and private functions
+## 3.3 関数とプライベート関数
 
-Inside a module, we can define functions with `def` and private functions with `defp`. A function defined with `def` is available to be invoked from other modules while a private function can only be invoked locally.
+モジュール内では，`def`で関数を，`defp`でプライベートな関数を定義することができます．`def`で定義された関数は他のモジュールから呼び出すことが可能です．プライベートな関数はローカルでのみ呼び出すことができます．
 
 ```elixir
 defmodule Math do
@@ -104,7 +104,7 @@ Math.sum(1, 2)    #=> 3
 Math.do_sum(1, 2) #=> ** (UndefinedFunctionError)
 ```
 
-Function declarations also support guards and multiple clauses. If a function has several clauses, Elixir will try each clause until it finds one that matches. Here is the implementation of a function that checks if the given number is zero or not:
+関数の宣言において，ガードと複数の節をサポートしています．関数にいくつかの節がある場合，エリクサーはマッチする節を見つけるまでそれぞれの節を試していきます．与えられた数がゼロであるかどうかをチェックする関数の実装は，次のとおりです:
 
 ```elixir
 defmodule Math do
@@ -124,9 +124,9 @@ Math.zero?([1,2,3])
 #=> ** (FunctionClauseError)
 ```
 
-Giving an argument that does not match any of the clauses raises an error.
+どの節にもマッチしない引数を与えた場合エラーが発生します．
 
-Named functions also support default arguments:
+名前付き関数はデフォルト引数もサポートしています．
 
 ```elixir
 defmodule Concat do
@@ -139,7 +139,7 @@ IO.puts Concat.join("Hello", "world")      #=> Hello world
 IO.puts Concat.join("Hello", "world", "_") #=> Hello_world
 ```
 
-Any expression is allowed to serve as a default value, but it won't be evaluated during the function definition; it will simply be stored for later use. Every time the function is invoked and any of its default values have to be used, the expression for that default value will be evaluated:
+デフォルト値を提供するためにどんな式を用意してもかまいませんが，関数の定義時には評価されず，後から使用する場合に備えて保存されます．デフォルト値を使わなければならない関数が呼び出されるたびに，保存された，デフォルト値を提供するための式が評価されます:
 
 ```elixir
 defmodule DefaultTest do
@@ -157,7 +157,7 @@ hello
 :ok
 ```
 
-If a function with default values has multiple clauses, it is recommended to create a separate clause without an actual body, just for declaring defaults:
+デフォルト値を持つ関数が複数の節を持っている場合，単にデフォルトを宣言するだけのための，ボディ部分無しの独立したdef文を作成することをお勧めします:
 
 ```elixir
 defmodule Concat do
@@ -177,7 +177,7 @@ IO.puts Concat.join("Hello", "world", "_") #=> Hello_world
 IO.puts Concat.join("Hello")               #=> Hello
 ```
 
-When using default values, one must be careful to avoid overlapping function definitions. Consider the following example:
+デフォルト値を使用する場合，関数の定義が重複しないように注意しなければなりません．次の例を考えてみます:
 
 ```elixir
 defmodule Concat do
@@ -193,11 +193,11 @@ defmodule Concat do
 end
 ```
 
-If we save the code above in a file named "concat.ex" and compile it, Elixir will emit the following warning:
+"concat.ex"という名前のファイルで上記のコードを保存し，それをコンパイルする場合，エリクサーは次の警告を出します:
 
     concat.ex:7: this clause cannot match because a previous clause at line 2 always matches
 
-The compiler is telling us that invoking the `join` function with two arguments will always choose the first definition of `join` whereas the second one will only be invoked when three arguments are passed:
+コンパイラは，2 つの引数の`join`の場合，常に最初の定義が選ばれ，2番目の`join`が呼び出されるのは 3 つの引数の場合のみであると告げています:
 
     $ iex concat.ex
 
@@ -213,9 +213,9 @@ iex> Concat.join "Hello", "world", "_"
 "Hello_world"
 ```
 
-### 3.4 Recursion
+### 3.4 再帰
 
-Due to immutability, loops in Elixir (and in functional programming languages) are written differently from conventional imperative languages. For example, in an imperative language, one would write:
+不変性のため，エリクサー(や関数型プログラミング言語)でのループは従来の命令型言語とは異なる書き方をされています．例えば，命令型言語では，次のように記述します:
 
 ```c
 for(i = 0; i < array.length; i++) {
@@ -223,7 +223,7 @@ for(i = 0; i < array.length; i++) {
 }
 ```
 
-In the example above, we are mutating the array which is not possible in Elixir. Therefore, functional languages rely on recursion: a function is called recursively until a condition is reached. Consider the example below that manually sums all the items in the list:
+上記の例では，エリクサーではできない，配列の変更をしています．そのため，関数型言語では，再帰(条件に達するまで関数が再帰的に呼び出される)に頼ります．以下のような，手動でリスト内のすべての項目を合計する例を考えてみましょう:
 
 ```elixir
 defmodule Math do
@@ -239,9 +239,9 @@ end
 Math.sum_list([1,2,3], 0) #=> 6
 ```
 
-In the example above, we invoke `sum_list` giving a list `[1,2,3]` and the initial value `0` as arguments. When a function has many clauses, we will try each clause until we find one that matches according to the pattern matching rules. In this case, the list `[1,2,3]` matches against `[h|t]` which assigns `h = 1` and `t = [2,3]` while `acc` is set to 0.
+上記の例では，リスト`[1,2,3]`と，初期値`0`を引数として与えて`sum_list`を呼び出しています．関数に複数の節がある場合，パターンマッチングルールに基づいてマッチするものを見つけられるまで，それぞれの節を試していきます．この場合だと，`acc`は0に設定されて，リスト`[1,2,3]`は`[h|t]`にマッチし，`h = 1`と`t = [2,3]`へ割り当てられます．
 
-Then, we add the head of the list to the accumulator `h + acc` and call `sum_list` again, recursively, passing the tail of the list as argument. The tail will once again match `[h|t]` until the list is empty, as seen below:
+その後，`h + acc`でリストの先頭をアキュムレータに追加し，引数としてリストの残りを渡して，再び，再帰的に`sum_list`を呼び出します．以下のようにリストが空になるまで，リストの残りは再び`[h|t]`へのマッチを繰り返します:
 
 ```elixir
 sum_list [1,2,3], 0
@@ -250,21 +250,21 @@ sum_list [3], 3
 sum_list [], 6
 ```
 
-When the list is empty, it will match the final clause which returns the final result of `6`. In imperative languages, such implementation would usually fail for large lists because the stack (in which our execution path is kept) would grow until it reaches a limit. Elixir, however, does tail call optimization in which the stack does not grow when a function exits by calling another function.
+リストが空である場合，最後の節とマッチし，最終的な結果`6`を返します．命令型言語では，このような実装をすると，(実行してきた経路が保持されている)スタックが制限に到達するまで成長してしまうため，大きなリストとなりたいてい失敗します．しかし，エリクサーでは，関数が終了する際に別の関数を呼び出すことでスタックが成長しない，末尾呼び出し最適化が行われます．
 
-Recursion and tail call optimization are an important part of Elixir and are commonly used to create loops, especially in cases where a process needs to wait and respond to messages (using the `receive` macro we saw in the previous chapter). However, recursion as above is rarely used to manipulate lists, since [the `Enum` module](/docs/stable/Enum.html) already abstracts such use cases. For instance, the example above could be simply written as:
+再帰と末尾呼び出しの最適化はエリクサーの重要な一部であり，ループを作成するため，特にプロセスがメッセージを待つ必要がある場合に頻繁に利用されます(前の章で`receive`マクロを使うのを見ましたね)．しかし，[Enumモジュール](/docs/stable/Enum.html)がすでにそのようなユースケースを抽象化しているため，上記のような再帰はリストを操作するためにはほとんど使用されていません．例えば，上記の例は，単に次のように記述できます:
 
 ```elixir
 Enum.reduce([1,2,3], 0, fn(x, acc) -> x + acc end)
 ```
 
-## 3.5 Directives
+## 3.5 ディレクティブ
 
-In order to facilitate software reuse, Elixir supports three directives. As we are going to see below, they are called directives because they have **lexical scope**.
+ソフトウェアの再利用を容易にするため，エリクサーは，3つのディレクティブをサポートしています．以下を見ていくとわかるように，それらは**レキシカルスコープ**を持っているので，ディレクティブと呼ばれています．
 
 ### 3.5.1 alias
 
-`alias` allows you to setup aliases for any given module name. Imagine our `Math` module has a special list for doing math specific operations:
+`alias`で任意のモジュールに別名をつけることができます．`Math`モジュールには数学の操作を行うための特別なリストがあると想像して下さい:
 
 ```elixir
 defmodule Math do
@@ -272,7 +272,7 @@ defmodule Math do
 end
 ```
 
-From now on, any reference to `List` will automatically expand to `Math.List`. In case one wants to access the original `List`, it can be done by accessing the module via `Elixir`:
+ここから，全ての`List`への参照は自動的に`Math.List`へ展開されます．元の`List`へアクセスしたい場合には，`Elixir`モジュールを介してアクセスすることができます:
 
 ```elixir
 List.values             #=> uses Math.List.values
@@ -280,21 +280,21 @@ Elixir.List.values      #=> uses List.values
 Elixir.Math.List.values #=> uses Math.List.values
 ```
 
-> Note: All modules defined in Elixir are defined inside a main Elixir namespace. However, for convenience, you can omit the Elixir main namespace.
+> 注:エリクサーで定義されているすべてのモジュールはエリクサー名前空間内に定義されています．しかし，利便性のために，エリクサー名前空間は省略することができます．
 
-Calling `alias` without an `as` option sets the alias automatically to the last part of the module name, for example:
+`as`オプションなしの`alias`呼び出しは自動的にモジュール名の最後の部分をエイリアスを設定します，たとえば:
 
 ```elixir
 alias Math.List
 ```
 
-Is the same as:
+は以下と同じです:
 
 ```elixir
 alias Math.List, as: List
 ```
 
-Notice that `alias` is **lexically scoped**, which allows you to set aliases inside specific functions:
+`alias`は**レキシカルスコープ**であることに注意してください，それが特定の関数内でエイリアスを設定することを可能にしています:
 
 ```elixir
 defmodule Math do
@@ -309,11 +309,11 @@ defmodule Math do
 end
 ```
 
-In the example above, since we are invoking `alias` inside the function `add`, the alias will just be valid inside the function `add`. `minus` won't be affected at all.
+上記の例では，`add`関数の内部で`alias`が呼び出されているので，エイリアスは単に`add`関数内でのみ有効となります．`minus`は全く影響を受けません．
 
 ### 3.5.2 require
 
-In general, a module does not need to be required before usage, except if we want to use the macros available in that module. For instance, suppose we created our own `my_if` implementation in a module named `MyMacros`. If we want to invoke it, we need to first explicitly require `MyMacros`:
+一般的に，対象のモジュールにあるマクロを使用する場合を除き，使用する前にrequireする必要はありません．例えば，私たちが`MyMacros`という名前のモジュールの中に`my_if`という実装を作ったとします．もしそれを呼び出したい場合，私たちは最初に`MyMacros`を明示的にrequireする必要があります:
 
 ```elixir
 defmodule Math do
@@ -322,11 +322,11 @@ defmodule Math do
 end
 ```
 
-An attempt to call a macro that was not loaded will raise an error. Note that like the `alias` directive, `require` is also lexically scoped. We will talk more about macros in chapter 5.
+ロードされていないマクロを呼ぼうとすると，エラーが発生します．`alias`ディレクティブのように，`require`もまたレキシカルスコープであることに注意してください．第5章でマクロについてさらに詳しく話します．
 
 ### 3.5.3 import
 
-We use `import` whenever we want to easily access functions or macros from other modules without using the qualified name. For instance, if we want to use the `duplicate` function from `List` several times in a module and we don't want to always type `List.duplicate`, we can simply import it:
+修飾名を使用せずに，他のモジュールの関数やマクロにアクセスしたいときに`import`を使います．例えば，モジュールの中で`List`の`duplicate`関数を複数回使いたく，毎回`List.duplicate`と打ち込みたくない場合，簡単にインポートできます:
 
 ```elixir
 defmodule Math do
@@ -338,28 +338,28 @@ defmodule Math do
 end
 ```
 
-In this case, we are importing only the function `duplicate` (with arity 2) from `List`. Although `only:` is optional, its usage is recommended. `except` could also be given as an option.
+このケースでは，`List`から(引数2つの)`duplicate`関数だけをインポートしています．`only:`はオプションではありますが，使うことが推奨されています．他にオプションとして`except`も指定することができます．
 
-`import` also supports selectors, to filter what you want to import. We have four selectors:
+`import`はインポートしたい対象をフィルタリングする，セレクタをサポートしています．4つのセレクタがあります:
 
-* `:default` - imports all functions and macros, except the ones starting by underscore;
-* `:all` - imports all functions and macros;
-* `:functions` - imports all functions;
-* `:macros` - imports all macros;
+* `:default` - _で始まるものを除く，すべての関数とマクロをインポートする;
+* `:all` - すべての関数とマクロをインポートする;
+* `:functions` - すべての関数をインポートする;
+* `:macros` - すべてのマクロをインポートする;
 
-For example, to import all macros, one could write:
+たとえば，すべてのマクロをインポートするには，次のように書くことができます:
 
 ```elixir
 import MyMacros, only: :macros
 ```
 
-Or to import all functions, you could write:
+あるいはすべての関数をインポートするには，次のように書くことができます:
 
 ```elixir
 import MyFunctions, only: :functions
 ```
 
-Note that `import` is also **lexically scoped**, this means we can import specific macros inside specific functions:
+`import`も**レキシカルスコープ**であることに注意してください，これは私たちが特定の関数内で特定のマクロをインポートすることができることを意味します:
 
 ```elixir
 defmodule Math do
@@ -370,13 +370,13 @@ defmodule Math do
 end
 ```
 
-In the example above, the imported `List.duplicate` is only visible within that specific function. `duplicate` won't be available in any other function in that module (or any other module for that matter).
+上の例では，インポートされた`List.duplicate`はそれを指定した関数内でのみ見ることができます．`duplicate`はモジュール内の他の関数では利用できなくなります(他のモジュールの場合についても同じことがいえます)．
 
-Note that importing a module automatically requires it. Furthermore, `import` also accepts the `as:` option which is automatically passed to `alias` in order to create an alias.
+モジュールをインポートすると，自動的にそれが必要になることに注意してください．さらに，別名をつけられるようにするため，`import`は，`alias`へ自動的に渡される`as:`オプションを用意しています．
 
-## 3.6 Module attributes
+## 3.6 モジュールの属性
 
-Elixir brings the concept of module attributes from Erlang. For example:
+エリクサーはErlangからモジュール属性という概念をもってきました．たとえば次のようなものです:
 
 ```elixir
 defmodule MyServer do
@@ -384,24 +384,24 @@ defmodule MyServer do
 end
 ```
 
-In the example above, we are explicitly setting the version attribute for that module. `@vsn` is used by the code reloading mechanism in the Erlang VM to check if a module has been updated or not. If no version is specified, the version is set to the MD5 checksum of the module functions.
+上記の例では，私たちは明示的にそのモジュールのバージョン属性を設定しています．`@vsn`は，ErlangのVM内のコード再読み込み機構が，モジュールが更新されたかどうかをチェックするために使用されます．もしバージョンが指定されていない場合は，モジュール関数をMD5チェックサムしたものがバージョンとして設定されます．
 
-Elixir has a handful of reserved attributes. Here are just a few of them, the most commonly used ones. Take a look at the docs for [Module](http://elixir-lang.org/docs/stable/Module.html) for a complete list of supported attributes.
+エリクサーは，少数の予約属性を持っています．ここではそれらのほんの一部であり，最も一般的に使用されるものを見ていきます．サポートされている属性の完全なリストについては[Module](http://elixir-lang.org/docs/stable/Module.html)のドキュメントを見て下さい．
 
-* `@moduledoc` - provides documentation for the current module;
-* `@doc` - provides documentation for the function or macro that follows the attribute;
-* `@behaviour` - (notice the British spelling) used for specifying an OTP or user-defined behaviour;
-* `@before_compile` - provides a hook that will be invoked before the module is compiled. This makes it possible to inject functions inside the module exactly before compilation;
+* `@moduledoc` - 現在のモジュールのドキュメントを提供します;
+* `@doc` - 属性の下に書かれる関数やマクロのドキュメントを提供しています;
+* `@behaviour` -  (つづりが英国式であることに注意してください)OTPまたはユーザー定義の動作を指定するために使われます;
+* `@before_compile` - モジュールがコンパイルされる前に呼び出されるフックが用意されています．これにより，コンパイルの直前にモジュール内へ関数を注入することができます．
 
-The following attributes are part of [typespecs](http://www.erlang.org/doc/reference_manual/typespec.html) and are also supported by Elixir:
+次の属性は[typespecs](http://www.erlang.org/doc/reference_manual/typespec.html)の一部で，エリクサーでもサポートされています:
 
-* `@spec` - provides a specification for a function;
-* `@callback` - provides a specification for the behavior callback;
-* `@type` - defines a type to be used in `@spec`;
-* `@typep` - defines a private type to be used in `@spec`;
-* `@opaque` - defines an opaque type to be used in `@spec`;
+* `@spec` - 関数の仕様を提供します;
+* `@callback` - behaviorコールバックのための仕様を提供します;
+* `@type` - `@spec`で使用する型を定義します;
+* `@typep` - `@spec`で使用するプライベートな型を定義します;
+* `@opaque` - `@spec`で使用する不透明な型(opaque type)を定義します;
 
-In addition to the built-in attributes outlined above, custom attributes may also be added:
+上記でざっと見た組み込み属性に加え，カスタム属性も追加することができます:
 
 ```elixir
 defmodule MyServer do
@@ -410,9 +410,9 @@ defmodule MyServer do
 end
 ```
 
-Unlike Erlang, user defined attributes are not stored in the module by default since it is common in Elixir to use such attributes to store temporary data. A developer can configure an attribute to behave closer to Erlang by calling [`Module.register_attribute/3`](/docs/stable/Module.html#register_attribute/3).
+エリクサーにおいて，一時的にデータを格納するためにユーザ定義された属性を使用することはよくあるので，Erlangとは異なり，ユーザ定義された属性は，デフォルトではモジュールに格納されていません．開発者は，[`Module.register_attribute/3`](/docs/stable/Module.html#register_attribute/3)を呼び出して属性をErlangの振舞いに似た動作をするようにも設定できます．
 
-Finally, notice that attributes can also be read inside functions:
+最後に，属性は関数の内側で読むことができることに着目してください:
 
 ```elixir
 defmodule MyServer do
@@ -426,11 +426,11 @@ MyServer.first_data #=> 11
 MyServer.second_data #=> 13
 ```
 
-Notice that reading an attribute inside a function takes a snapshot of its current value. In other words, the value is read at compilation time and not at runtime. Check [the documentation for the module `Module` documentation](/docs/stable/Module.html) for other functions to manipulate module attributes.
+関数内で属性を読み取ると，現在の値のスナップショットを取得していることに注意してください．言い換えると，この値は実行時ではなく，コンパイル時に読み込まれます．モジュール属性を操作するためのその他の関数については[`Module`モジュールのドキュメント](/docs/stable/Module.html)を見てください．
 
-## 3.7 Nesting
+## 3.7 ネスト
 
-Modules in Elixir can be nested too:
+エリクサーのモジュールもネストすることができます:
 
 ```elixir
 defmodule Foo do
@@ -439,18 +439,18 @@ defmodule Foo do
 end
 ```
 
-The example above will define two modules `Foo` and `Foo.Bar`. The second can be accessed as `Bar` inside `Foo` as long as they are in the same scope. If later the developer decides to move `Bar` to another file, it will need to be referenced by its full name (`Foo.Bar`) or an alias needs to be set using the `alias` directive discussed above.
+上記の例では，`Foo`と`Foo.Bar`という2つのモジュールを定義します．二つめのモジュールは，同じスコープ内にある限り，`Foo`の内側では`Bar`としてアクセスすることができます．後に開発者が`Bar`を別のファイルに移動することを決めた場合，完全な名前(`Foo.Bar`)によって参照するか，前述した`alias`ディレクティブを使用して別名を設定する必要があります．
 
-## 3.8 Aliases
+## 3.8 エイリアス
 
-In Erlang (and consequently in the Erlang VM), modules and functions are represented by atoms. For instance, this is valid Erlang code:
+Erlangでは(つまり，ErlangのVMでも)，モジュールや関数はアトムで表されます．例えば，これは有効なErlangのコードです:
 
 ```elixir
 Mod = lists,
 Mod:flatten([1,[2],3]).
 ```
 
-In the example above, we store the atom `lists` in the variable `Mod` and then invoke the function `flatten` in it. In Elixir, the same idiom is allowed:
+上記の例では，変数`Mod`に`lists`というアトムを保存し，次に関数`flatten`が呼び出されます．エリクサーでも，同じ表現ができます:
 
 ```iex
 iex> mod = :lists
@@ -459,7 +459,7 @@ iex> mod.flatten([1,[2],3])
 [1,2,3]
 ```
 
-In other words, we are simply calling the function `flatten` on the atom `:lists`. This mechanism is exactly what empowers Elixir aliases. An alias in Elixir is a capitalized identifier (like `List`, `Keyword`, etc) which is converted to an atom representing a module during compilation. For instance, the `List` alias translates by default to the atom `Elixir.List`:
+言い換えると，私たちは単に`:lists`アトムの`flatten`を呼び出しているだけです．まさにこのメカニズムこそが，エリクサーのエイリアスに力を与えています．エリクサーでのエイリアスは(`List` ，`Keyword`などの)頭文字が大文字化された識別子で，これらはコンパイルのときにモジュールを表すアトムに変換されます．例えば，`List`というエイリアスはデフォルトでは`Elixir.List`というアトムになります:
 
 ```iex
 iex> is_atom(List)
