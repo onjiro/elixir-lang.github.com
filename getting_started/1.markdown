@@ -1,80 +1,80 @@
 ---
 layout: getting_started
-title: 1 Introduction
+title: 1 はじめに
 guide: 1
 total_guides: 7
 ---
 
 # {{ page.title }}
 
-Welcome! In this tutorial we are going to show you how to get started with Elixir. We will start with how to install Elixir, how to use its interactive shell, basic data types and operators. In later chapters, we are going to discuss more advanced subjects such as macros, protocols and other features provided by Elixir.
+ようこそ！このチュートリアルでは，エリクサーを使い始める方法をお見せします．エリクサーをインストールする方法，インタラクティブシェルや基本的なデータ型と演算子の使い方から始めていきましょう．後の章で，マクロ，プロトコルやその他エリクサーが提供する機能など，より高度なテーマについてお話しします．
 
-To see Elixir in action, check out these introductory screencasts by Dave Thomas. The first one, [Nine Minutes of Elixir](http://www.youtube.com/watch?v=hht9s6nAAx8), provides a brief tour of the language. The second one is a 30-minute [introduction to Elixir](http://www.youtube.com/watch?v=a-off4Vznjs) that'll help you get started writing your first functions and creating your first processes in Elixir. Be sure to follow the next section of this guide to install Elixir on your machine and then follow along with the videos.
+動いているエリクサーを見るには，Dave Thomasによる入門用スクリーンキャストを見てください．最初のものは，[Nine Minutes of Elixir](http://www.youtube.com/watch?v=hht9s6nAAx8)で，言語を簡単に一巡りしています．もう一つはあなたがエリクサーで最初の関数を書き始めるたり最初のプロセスを作成する手助けになる[introduction to Elixir](http://www.youtube.com/watch?v=a-off4Vznjs)で30分あります．あなたのマシンへエリクサーをインストールして，ビデオと一緒に進めるためには，このガイドの次のセクションに従ってください．
 
-PeepCode also has a two hour video with Jos&eacute; Valim called [Meet Elixir](https://peepcode.com/products/elixir).
+PeepCodeにも[Meet Elixir](https://peepcode.com/products/elixir)というJosé Valimの2時間のビデオがあります．
 
-Keep in mind that Elixir is still in development, so if at any point you receive an error message and you are not sure how to proceed, [please let us know in the issues tracker](https://github.com/elixir-lang/elixir/issues). Having explanative and consistent error messages is one of the many features we aim for in Elixir.
+エリクサーはまだ開発中であるので，エラーメッセージが表示され，進める方法がわからない場合， ぜひいつでも[issues trackerで知らせてください]((https://github.com/elixir-lang/elixir/issues)．説明的で一貫性のあるエラーメッセージを持つことは，エリクサーで目指している多くの特長の中の1つです．
 
-## 1.1 Installation
+## 1.1 インストール
 
-The only prerequisite for Elixir is Erlang, version R16B or later. You can find the source code for [Erlang here](http://www.erlang.org/download.html) or use one of the [precompiled packages](https://www.erlang-solutions.com/downloads/download-erlang-otp).
+エリクサーを動かすために唯一必要なのはErlangで，バージョンR16B以降が必要です．Erlangの[ソースコード](http://www.erlang.org/download.html)，[コンパイル済みパッケージ](https://www.erlang-solutions.com/downloads/download-erlang-otp)はリンク先にあります．
 
-For Windows developers, we recommend the precompiled package. Those on a UNIX platform can probably get Erlang installed via one of the many package management tools.
+Windowsで開発する人には，コンパイル済みパッケージをお勧めします．UNIXプラットフォームの場合はおそらくパッケージ管理ツールを経由してErlangをインストールできると思います．
 
-After Erlang is installed, you should be able to open up the command line (or command prompt) and check the Erlang version by typing `erl`. You will see some information as follows:
+Erlangがインストールされたら，コマンドライン（あるいはコマンドプロンプト）を開いて，erlと入力することでErlangのバージョンを確認することができるようになっているはずです．そうすると次のようにいくつか情報が表示されます:
 
     Erlang R16B (erts-5.10.1) [source] [64-bit] [smp:2:2] [rq:2] [async-threads:0] [hipe] [kernel-poll:false]
 
-Notice that depending on how you installed Erlang, it will not add Erlang binaries to your environment. Be sure to have Erlang binaries in your [PATH](http://en.wikipedia.org/wiki/Environment_variable), otherwise Elixir won't work!
+どうやってErlangをインストールしたかに注意してください，その方法によってはErlangのバイナリをあなたの環境(訳註:パス?)に追加しないことがあります．Erlangのバイナリが[PATH](http://en.wikipedia.org/wiki/Environment_variable)に含められていることを確認してください，そうしないとエリクサーが動きません！
 
-After Erlang is up and running, it is time to install Elixir. You can do that via Distributions, Precompiled package or Compiling from Source.
+Erlangの起動と実行ができるようになったなら，エリクサーのインストールに進みましょう．ディストリビューション経由，コンパイル済みパッケージ，またはソースからコンパイルしたものを使う方法があります．
 
-### 1.1.1 Distributions
+### 1.1.1 ディストリビューション経由
 
-This tutorial requires Elixir v0.10.2 or later and it may be available in some distributions:
+このチュートリアルには，エリクサーv0.10.2以降が必要で，いくつかのディストリビューションではすぐに利用できます：
 
-* Homebrew for Mac OS X
-  * Update your homebrew to latest with `brew update`
-  * Install Elixir: `brew install elixir`
-* Fedora 17+ and Fedora Rawhide
+* Mac OS X用Homebrew
+  * `brew update`してhomebrewを最新にする
+  * エリクサーをインストール: `brew install elixir`
+* Fedora 17+とFedora Rawhide
   * `sudo yum -y install elixir`
-* Arch Linux (on AUR)
+* Arch Linux (AURを利用)
   * `yaourt -S elixir`
-* openSUSE (and SLES 11 SP3+)
-  * Add Erlang devel repo with `zypper ar -f obs://devel:languages:erlang/ erlang`
-  * Install Elixir: `zypper in elixir`
+* openSUSE (およびSLES 11 SP3+)
+  * Erlangの開発リポジトリを追加 `zypper ar -f obs://devel:languages:erlang/ erlang`
+  * エリクサーをインストール: `zypper in elixir`
 * Gentoo
   * `emerge --ask dev-lang/elixir`
-* Chocolatey for Windows
+* Windows用Chocolatey
   * `cinst elixir`
 
-If you don't use any of the distributions above, don't worry, we also provide a precompiled package!
+上記のディストリビューションのいずれも使用していない場合でも，コンパイル済みパッケージを提供していますのでご心配なく！
 
-### 1.1.2 Compiling from source (Unix and MinGW)
+### 1.1.2 (UnixやMinGWでの)ソースからのコンパイル
 
-You can download and compile Elixir in few steps. You can get the [latest stable release here](https://github.com/elixir-lang/elixir/tags), unpack it and then run `make` inside the unpacked directory. After that, you are ready to run the `elixir` and `iex` commands from the `bin` directory. It is recommended that you add Elixir's `bin` path to your PATH environment variable to ease development:
+数手順でエリクサーをダウンロードしてコンパイルすることができます．[ここで最新の安定リリース]((https://github.com/elixir-lang/elixir/tags)を取得し，それを解凍し，解凍したディレクトリの中で`make`を動かしてください．そうすると，`bin`ディレクトリから`elixir`と`iex`のコマンドを実行する準備が整います．開発を容易にするために，環境変数PATHにエリクサーの`bin`のパスを追加しておくことをお勧めします:
 
     $ export PATH="$PATH:/path/to/elixir/bin"
 
-In case you are feeling a bit more adventurous, you can also compile from master:
+もう少し冒険してみたい場合，マスターからコンパイルすることもできます:
 
     $ git clone https://github.com/elixir-lang/elixir.git
     $ cd elixir
     $ make clean test
 
-If the tests pass, you are ready to go. Otherwise, feel free to open an issue [in the issues tracker on Github](https://github.com/elixir-lang/elixir).
+テストがうまくいったなら，準備は整いました．そうならなかった場合，気軽に[GitHubのissues tracker](https://github.com/elixir-lang/elixir)に登録してください．
 
-### 1.1.3 Precompiled package
+### 1.1.3 コンパイル済パッケージ
 
-Elixir provides a [precompiled package for every release](https://github.com/elixir-lang/elixir/releases/). Precompiled packages are the best option if you are developing on Windows.
+エリクサーは[すべてのリリースのたびにコンパイル済みパッケージ](https://github.com/elixir-lang/elixir/releases/)を提供しています ．コンパイル済みパッケージは，Windows上で開発している場合に最適なオプションとなります．
 
-After downloading and unzip-ing the package, you are ready to run the `elixir` and `iex` commands from the `bin` directory. It is recommended that you also add Elixir's `bin` path to your PATH environment variable to ease development.
+パッケージをダウンロード，解凍すると，`bin`ディレクトリから`elixir`と`iex`コマンドを実行する準備ができあがります．開発を簡単にするため，環境変数PATHにエリクサーの`bin`のパスを追加することをお勧めします．
 
-## 1.2 Interactive mode
+## 1.2 インタラクティブモード
 
-When you install Elixir, you will have three new executables: `iex`, `elixir` and `elixirc`. If you compiled Elixir from source or are using a packaged version, you can find these inside the `bin` directory.
+あなたがエリクサーをインストールすると，3つの実行ファイル`iex`,`elixir`と`elixirc`を得ることになります．もしあなたがソースからのコンパイルしたエリクサーやパッケージ版を使っているなら，その中にある`bin`ディレクトリから見つけだすことができます．
 
-For now, let's start by running `iex` which stands for Interactive Elixir. In interactive mode, we can type any Elixir expression and get its result straight away. Let's warm up with some basic arithmetic expressions:
+ここでは，`iex`(インタラクティブエリクサーの意)を実行してみましょう．インタラクティブモードでは，エリクサーのどんな式でも入力でき，そしてすぐに結果を得ることができます．いくつかの基本的な算術式でアップを始めましょう:
 
 ```iex
 iex> 1 + 1
@@ -84,8 +84,7 @@ iex> 10 - 5
 iex> 10 / 2
 5.0
 ```
-
-Notice `10 / 2` returned a float `5.0` instead of an integer. This is expected. In Elixir the operator `/` always returns a float. If you want to do integer division or get the division remainder, you can invoke the `div` and `rem` functions:
+`10 / 2`がintegerの代わりにfloatの`5.0`を返していることに注意してください．これは期待通りの動きです．エリクサーの`/`演算子は常にfloatを返します．もし除算結果を整数で得たかったり，剰余を得たい場合は`div`と`rem`という関数を呼びだすことができます．
 
 ```iex
 iex> div(10, 2)
@@ -96,11 +95,11 @@ iex> rem 10, 3
 1
 ```
 
-In the example above, we called two functions called `div` and `rem`. Notice that parentheses are not required in order to invoke a function. We are going to discuss more about this later. Let's move forward and see what other data types we have in Elixir.
+上の例では`div`と`rem`という2つの関数を呼び出しました．関数を呼びだすのに括弧が必要でないことに注意してください．後でこのことについて詳しく話します．先に進んで，他にエリクサーがどんなデータ型を持っているか見てみましょう．
 
-## 1.3 Basic types
+## 1.3 基本的な型
 
-Some basic types are:
+いくつかの基本的な型は以下の通りです:
 
 ```iex
 iex> 1          # integer
@@ -112,7 +111,7 @@ iex> [1,2,3]    # list
 iex> <<1,2,3>>  # bitstring
 ```
 
-Elixir by default imports many functions to work on these types:
+エリクサーはこれらの型で動作する沢山の関数をデフォルトでインポートしています:
 
 ```iex
 iex> size { 1, 2, 3 }
@@ -122,14 +121,14 @@ iex> length [ 1, 2, 3 ]
 3
 ```
 
-Elixir also supports UTF-8 encoded strings:
+エリクサーはUTF-8でエンコードされたstringもサポートしています:
 
 ```iex
 iex> "hellö"
 "hellö"
 ```
 
-Strings support interpolation, too:
+stringのinterpolation(訳注:#{}による文字列の補完)もサポートしています:
 
 ```iex
 iex> name = "world"
@@ -137,7 +136,7 @@ iex> "hello #{name}"
 "hello world"
 ```
 
-At the end of the day, strings are nothing more than a bunch of bytes packed together. We can verify this using the `is_binary` function:
+実のところ，stringはバイト列をまとめたものに過ぎません．`is_binary`関数で確かめることができます:
 
 ```iex
 iex> is_binary("hello")
@@ -146,7 +145,7 @@ iex> byte_size("hello")
 5
 ```
 
-And a binary is nothing more than a bunch of bits packed together:
+そしてバイナリはビット列をまとめたものに過ぎません:
 
 ```iex
 iex> is_bitstring("hello")
@@ -155,14 +154,14 @@ iex> bit_size("hello")
 40
 ```
 
-Elixir allows you to create "raw" binaries too. Let's create a binary with three null bytes:
+エリクサーではあなたが生のバイナリを作ることできます．3つのnullバイトで構成されたバイナリを作ってみましょう:
 
 ```iex
 iex> is_binary <<0, 0, 0>>
 true
 ```
 
-Note that a single-quoted expression in Elixir is a char list and is not the same as a double-quoted one:
+エリクサーでは，シングルクォートされた式はcharのリストで，ダブルクォートされたものと同じではないことに注意してください:
 
 ```iex
 iex> is_binary('hello')
@@ -171,7 +170,7 @@ iex> is_list('hello')
 true
 ```
 
-We will go into more details about char lists in the next chapter. Elixir also provides `true` and `false` as booleans:
+charのリストについては次の章で詳しく触れます．エリクサーはbooleanとして`true`と`false`も提供しています:
 
 ```iex
 iex> true
@@ -180,14 +179,14 @@ iex> is_boolean false
 true
 ```
 
-Booleans are represented internally as atoms:
+boolean値は内部ではatomとして表されています:
 
 ```iex
 iex> is_atom(true)
 true
 ```
 
-Elixir also provides anonymous functions (note the dot between the variable and arguments when calling an anonymous function):
+エリクサーは匿名関数も提供しています(匿名関数を呼び出す場合の値と引数の間にあるドットに注意してください):
 
 ```iex
 # function
@@ -197,13 +196,13 @@ iex> x.(1, 2)
 3
 ```
 
-Elixir also provides `Port`, `Reference`s and `PID`s as data types (usually used in process communication), but they are out of the scope of a getting started tutorial. For now, let's take a look at the basic operators in Elixir before we move on to the next chapter.
+エリクサーはデータ型として`Port`,`Reference`や`PID`も提供しています(通常はプロセス間通信で利用されます)，しかしこれらは導入を目的としたチュートリアルの範囲からは外れています．今のところは，次の章へ進む前にエリクサーの基本的な演算子を見てみましょう．
 
-## 1.4 Operators
+## 1.4 演算子
 
-As we saw earlier, Elixir provides `+`, `-`, `*`, `/` as arithmetic operators.
+これまで見てきたように，エリクサーは算術演算子として`+`,`-`,`*`,`/`を提供しています．
 
-Elixir also provides `++` and `--` to manipulate lists:
+エリクサーはリストの操作のために`++`と`--`も提供しています:
 
 ```iex
 iex> [1,2,3] ++ [4,5,6]
@@ -212,14 +211,14 @@ iex> [1,2,3] -- [2]
 [1,3]
 ```
 
-String concatenation is done via `<>`:
+stringの連結は`<>`を通して行われます:
 
 ```iex
 iex> "foo" <> "bar"
 "foobar"
 ```
 
-Elixir also provides three boolean operators: `or`, `and` and `not`. These operators are strict in the sense that they expect a boolean (`true` or `false`) as their first argument:
+エリクサーは3つのboolean演算子:`or`, `and` and `not`を提供しています．これらの演算子は最初の引数にboolean(`true`か`false`)を期待するという意味で厳密です:
 
 ```iex
 iex> true and true
@@ -228,14 +227,14 @@ iex> false or is_atom(:example)
 true
 ```
 
-Providing a non-boolean will raise an exception:
+booleanではないものを与えると例外を発生させます:
 
 ```iex
 iex> 1 and true
 ** (ArgumentError) argument error
 ```
 
-`or` and `and` are short-circuit operators. They only execute the right side if the left side is not enough to determine the result:
+`or`と`and`はショートサーキット演算子です．左側の結果が条件を満たせないことが決まった場合のみ右側が実行されます:
 
 ```iex
 iex> false and error("This error will never be raised")
@@ -245,9 +244,9 @@ iex> true or error("This error will never be raised")
 true
 ```
 
-> Note: If you are an Erlang developer, `and` and `or` in Elixir actually map to the `andalso` and `orelse` operators in Erlang.
+> メモ: もしあなたがErlang開発者なら，エリクサーの`and`と`or`は実際にはErlangの`andalso`と`orelse`に対応しています．
 
-Besides these boolean operators, Elixir also provides `||`, `&&` and `!` which accept arguments of any type. For these operators, all values except `false` and `nil` will evaluate to true:
+これらのboolean演算子の他に，エリクサーはどんな型の引数も受け入れ可能な`||`,`&&`と`!`を提供しています．これらの演算子は`false`と`nil`以外の全てをtrueと評価します．
 
 ```iex
 # or
@@ -271,9 +270,9 @@ iex> !nil
 true
 ```
 
-As a rule of thumb, use `and`, `or` and `not` when you are expecting booleans. If any of the arguments are non-boolean, use `&&`, `||` and `!`.
+おおまかに言うと，boolean値を期待しているなら`and`,`or`や`not`を使います．boolean値ではないものを引数にするなら`&&`,`||`や`!`を使います．
 
-Elixir also provides `==`, `!=`, `===`, `!==`, `<=`, `>=`, `<` and `>` as comparison operators:
+エリクサーは比較演算子として`==`,`!=`,`===`,`!==`,`<=`,`>=`,`<`や`>`も提供しています:
 
 ```iex
 iex> 1 == 1
@@ -284,7 +283,7 @@ iex> 1 < 2
 true
 ```
 
-The difference between `==` and `===` is that the latter is more strict when comparing integers and floats:
+`==`と`===`の違いは，後者の方がintegerとfloatと比較した場合により厳密であるということです:
 
 ```iex
 iex> 1 == 1.0
@@ -293,17 +292,17 @@ iex> 1 === 1.0
 false
 ```
 
-In Elixir, we can compare two different data types:
+エリクサーでは2つの異なるデータ型を比較できます:
 
 ```iex
 iex> 1 < :atom
 true
 ```
 
-The reason we can compare different data types is for pragmatism. Sorting algorithms don't need to worry about different data types in order to sort. The overall sorting order is defined below:
+2つの異なるデータ型を比較できるのは，実用のためです．ソートアルゴリズムはソートする場合に異なるデータ型のことを心配する必要がありません．全体の並び順は以下のようになっています:
 
     number < atom < reference < functions < port < pid < tuple < list < bitstring
 
-You don't actually need to memorize this ordering, but it is important just to know an order exists.
+正確にこの順番を記憶しておく必要はありませんが，こういった順番があることを知っておくことは重要です．
 
-Well, that is it for the introduction. In the next chapter, we are going to discuss some basic functions, data types conversions and a bit of control-flow.
+はい，ここまでが導入です．次の章では基本的な関数，データ型の変換とちょっとした制御フローについて話しましょう．
