@@ -7,11 +7,11 @@ total_guides: 7
 
 # {{ page.title }}
 
-In this chapter we'll go a bit deeper into the basic data-types, learn some control flow mechanisms and talk about anonymous functions.
+この章ではデータ型をもう少し詳しく知ったり，いくつかの制御フローについて学んだり，匿名関数について話したりします．
 
-## 2.1 Lists and tuples
+## 2.1 listとtuple
 
-Elixir provides both lists and tuples:
+エリクサーはlistとtupleのどちらも提供します:
 
  ```iex
 iex> is_list [1,2,3]
@@ -20,25 +20,25 @@ iex> is_tuple {1,2,3}
 true
 ```
 
-While both are used to store items, they differ on how those items are stored in memory. Lists are implemented as linked lists (where each item in the list points to the next item) while tuples are stored contiguously in memory.
+どちらも物を収めるのに使われます，違いはどうやってメモリに物を収めるかです．listはlinked lists(リストの中の物が，次の物の場所を指し示している)で実装されているのに対しtupleは連続したメモリに収められています．
 
-This means that accessing a tuple element is very fast (constant time) and can be achieved using the `elem` function:
+つまり，tupleの要素にアクセスするのはとても速く(定数時間)，`elem`関数を使って行なえます:
 
  ```iex
 iex> elem { :a, :b, :c }, 0
 :a
  ```
 
-On the other hand, updating a tuple is expensive as it needs to duplicate the tuple contents in memory. Updating a tuple can be done with the `set_elem` function:
+一方，tupleの更新はメモリにあるtupleの内容を複製しなければならないので，高くつきます．tupleの更新は`set_elem`関数で行えます:
 
 ```iex
 iex> set_elem { :a, :b, :c }, 0, :d
 {:d,:b,:c}
  ```
 
-> Note: If you are an Erlang developer, you will notice that we used the `elem` and `set_elem` functions instead of Erlang's `element` and `setelement`. The reason for this choice is that Elixir attempts to normalize Erlang API's to always receive the "subject" of the function as the first argument and employ zero-based access.
+> メモ: もしあなたがErlangの開発者なら，Erlangの`element`と`setelement`関数のかわりに`elem`と`set_elem`関数を使ったと気づくでしょう．関数の最初の引数が常に主体となる，0から始まるアクセスができるようにするといった，ErlangのAPIを標準化するElixirの試みのためにこのようにしました．
 
-Since updating a tuple is expensive, when we want to add or remove elements, we use lists. Since lists are linked, it means accessing the first element of the list is very cheap. Accessing the n-th element, however, will require the algorithm to pass through n-1 nodes before reaching the n-th. We can access the `head` of the list as follows:
+tupleを更新するのはたいへんなので，要素を追加あるいは削除したい場合はlistを使います．リストはリンクしているので，最初の要素にアクセスするのはとても簡単です．N番目の要素にアクセスするには，どうやってもN番目にたどりつくまでにN-1のノードを通る計算になります．以下のようにlistの`head`へアクセスできます:
 
 ```iex
 # Match the head and tail of the list
@@ -56,7 +56,7 @@ iex> length [head | tail]
 3
 ```
 
-In the example above, we have matched the head of the list to the variable `head` and the tail of the list to the variable `tail`. This is called **pattern matching**. We can also pattern match tuples:
+上記のように，listの先頭を変数`head`へ当て，listの残りを変数`tail`へ当てることができます．これを**パターンマッチング**といいます．tupleにもパターンマッチできます:
 
 ```iex
 iex> { a, b, c } = { :hello, "world", 42 }
@@ -67,21 +67,21 @@ iex> b
 "world"
 ```
 
-A pattern match will error in case the sides can't match. This is, for example, the case when the tuples have different sizes:
+パターンマッチはマッチしなかった時にエラーになります．tupleが違うサイズだった場合の例です:
 
 ```iex
 iex> { a, b, c } = { :hello, "world" }
 ** (MatchError) no match of right hand side value: {:hello,"world"}
 ```
 
-And also when comparing different types:
+異なる型を比較した場合です:
 
 ```iex
 iex> { a, b, c } = [:hello, "world", '!']
 ** (MatchError) no match of right hand side value: [:hello,"world",'!']
 ```
 
-More interestingly, we can match on specific values. The example below asserts that the left side will only match the right side in case that the right side is a tuple that starts with the atom `:ok` as a key:
+最も興味深いのは，特定の値にマッチさせることができることです．次の例は，右側がタプルで，キーとして`:ok`というatomから始まるものだけを受けつけるということを，左側の部分で指定しています:
 
 ```iex
 iex> { :ok, result } = { :ok, 13 }
@@ -93,7 +93,7 @@ iex> { :ok, result } = { :error, :oops }
 ** (MatchError) no match of right hand side value: {:error,:oops}
 ```
 
-Pattern matching allows developers to easily destruct data types such as tuples and lists. As we will see in following chapters, it is one of the foundations of recursion in Elixir. However, in case you can't wait to iterate through and manipulate your lists, the [`Enum` module](/docs/stable/Enum.html) provides several helpers to manipulate lists (and other enumerables in general) while the [`List` module](/docs/stable/List.html) provides several helpers specific to lists:
+パターンマッチングを使うとlistやtupleのようなデータ型を簡単に解体できるようになります．これは後の章で紹介する，エリクサーで再帰を扱う際の基本の一つとなります．しかし，そこまでlistの反復処理をするのが待ちきれないとおっしゃるなら，[`Enum` module](/docs/stable/Enum.html)がlist(や，他に一般的に列挙できるもの)の操作のヘルパーをいくつか提供しており，また[`List` module](/docs/stable/List.html)でも特にlistに特化した操作のヘルパーをいくつか提供しています．
 
 ```iex
 iex> Enum.at [1,2,3], 0
@@ -102,16 +102,16 @@ iex> List.flatten [1,[2],3]
 [1,2,3]
 ```
 
-## 2.2 Keyword lists
+## 2.2 キーワードリスト
 
-Elixir also provides a special syntax to create a list of keywords. They can be created as follows:
+エリクサーはキーワードのリストを作るための特別な構文を提供しています．以下のようにして作れます:
 
 ```iex
 iex> [a: 1, b: 2]
 [a: 1, b: 2]
 ```
 
-Keyword lists are nothing more than a list of two element tuples where the first element of the tuple is an atom:
+キーワードリストは単に最初の要素がatomである二要素のtupleをまとめたlistでしかありません．
 
  ```iex
 iex> [head | tail] = [a: 1, b: 2]
@@ -120,7 +120,7 @@ iex> head
 { :a, 1 }
 ```
 
-The [`Keyword` module](/docs/stable/Keyword.html) contains several functions that allow you to manipulate a keyword list ignoring duplicated entries or not. For example:
+[`Keyword` module](/docs/stable/Keyword.html)はキーワードリストの操作で重複を無視するか，無視しないかといった操作をするためのいくつかの関数を保持しています．例えば:
 
  ```iex
 iex> keywords = [foo: 1, bar: 2, foo: 3]
@@ -130,7 +130,7 @@ iex> Keyword.get_values keywords, :foo
 [1,3]
 ```
 
-Since keyword lists are very frequently passed as arguments, they do not require brackets when given as the last argument in a function call. For instance, the examples below are valid and equivalent:
+キーワードリストは引数として渡すことが多いので，関数呼び出しの最後の引数として渡す場合は角括弧を不要としています．例えば以下の例はどれも正しくて，かつ同じ内容を表しています:
 
 ```iex
 iex> if(2 + 2 == 4, [do: "OK"])
@@ -141,9 +141,9 @@ iex> if 2 + 2 == 4, do: "OK"
 "OK"
 ```
 
-## 2.3 Strings (binaries) and char lists (lists)
+## 2.3 string(バイナリ)とchar list(リスト)
 
-In Elixir, a double-quoted value is not the same as a single-quoted one:
+エリクサーにおいて，ダブルクォートされた値はシングルクォートされた値とは異なります:
 
 ```iex
 iex> "hello" == 'hello'
@@ -154,9 +154,9 @@ iex> is_list 'hello'
 true
 ```
 
-We say a double-quoted value is a **string**, which is represented by a binary. A single-quoted value is a **char list**, which is represented by a list.
+ダブルクォートされた値は**string**でバイナリで表現されています．シングルクォートされた値は**char list**でlistで表現されています．
 
-In fact, both double-quoted and single-quoted representations are just a shorter representation of binaries and lists respectively. Given that `?a` in Elixir returns the ASCII integer for the letter `a`, we could also write:
+事実，ダブルクォートされたものとシングルクォートされたものはそれぞれ単にバイナリとリストの短い表現にすぎません．エリクサーで`?a`を与えられると`a`のASCII値を返します，そこでこのように書けます:
 
 ```iex
 iex> is_integer ?a
@@ -167,7 +167,7 @@ iex> [?a, ?b, ?c]
 'abc'
 ```
 
-In such cases, Elixir detects that all characters in the binary and in the list are printable and returns the quoted representation. However, adding a non-printable character forces them to be printed differently:
+このケースでは，エリクサーはバイナリの中やリストの中の全ての文字が表示可能であることを検出してクォートで表現しています．しかし，表示可能ではない文字を追加すると，表示が変わります:
 
 ```iex
 iex> <<?a, ?b, ?c, 1>>
@@ -177,7 +177,7 @@ iex> [?a, ?b, ?c, 1]
 [97,98,99,1]
 ```
 
-In Elixir, strings (double-quoted) are preferred unless you want to explicitly iterate over a char list (which is sometimes common when interfacing with Erlang code from Elixir). As lists, binaries also support pattern matching:
+エリクサーでは，明示的にcharのリストが必要な場合(エリクサーからErlangのインターフェースでたまに使います)ではないときはダブルクォートされたstringの方が良いです．リストもバイナリのどちらもパターンマッチングできます:
 
 ```iex
 iex> <<a, b, c>> = "foo"
@@ -186,7 +186,7 @@ iex> a
 102
 ```
 
-It is also possible to match on the "tail" of a binary, extracting the first bytes and matching the rest into a binary:
+バイナリの"tail"をマッチさせることもできます，最初の1バイトを抽出してマッチさせて，残りをバイナリにするには:
 
 ```iex
 iex> <<f :: integer, rest :: binary>> = "foo"
@@ -197,13 +197,13 @@ iex> rest
 "oo"
 ```
 
-In the example above, we tagged each segment in the binary. The first segment has integer type (the default), which captures the ascii code for the letter "f". The remaining bytes "oo" are assigned into the binary `rest`.
+上記の例では，バイナリの各セグメントにタグをつけました．最初のセグメントはinteger型(デフォルト)で，文字"f"のASCIIコードを取得します．残りのバイト"oo"はバイナリとして`rest`に割り当てられます．
 
-The binary/bitstring syntax in Elixir is very powerful, allowing you to match on bytes, bits, utf8 codepoints and much more. You can find more about it [in Elixir docs](http://elixir-lang.org/docs/master/Kernel.SpecialForms.html#<<>>/1). Meanwhile, let's talk more about Unicode.
+エリクサーのバイナリ/ビット文字構文はとてもパワフルで，バイト，ビット，UTF8コードポイント単位などでのマッチができます．詳しくは[in Elixir docs](http://elixir-lang.org/docs/master/Kernel.SpecialForms.html#<<>>/1)でみることができます．次はユニコードについて話しましょう．
 
-## 2.4 Unicode support
+## 2.4 ユニコードのサポート
 
-A string in Elixir is a binary which is encoded in UTF-8. For example, the string "é" is a UTF-8 binary containing two bytes:
+エリクサーのstringはUTF-8でエンコードされたバイナリになっています．例えばstring "é" は2バイトのバイナリです:
 
 ```iex
 iex> string = "é"
@@ -212,7 +212,7 @@ iex> size(string)
 2
 ```
 
-In order to easily manipulate strings, Elixir provides a [`String` module](http://elixir-lang.org/docs/stable/String.html):
+stringを簡単に操作するために，エリクサーは[`String` モジュール](http://elixir-lang.org/docs/stable/String.html)を提供しています:
 
 ```iex
 # returns the number of bytes
@@ -224,16 +224,16 @@ iex> String.length "héllò"
 5
 ```
 
-> Note: to retrieve the number of elements in a data structure, you will use a function named `length` or `size`. Their usage is not arbitrary. The first is used when the number of elements needs to be calculated. For example, calling `length(list)` will iterate the whole list to find the number of elements in that list. `size` is the opposite, it means the value is pre-calculated and stored somewhere and therefore retrieving its value is a cheap operation. That said, we use `size` to get the size of a binary, which is cheap, but retrieving the number of unicode characters uses `String.length`, since the whole string needs to be iterated.
+> メモ: データ構造の要素数を調べるのに，`length`と`size`という関数を使います．これらは任意に使い分けられるのではありません．前者は要素の数を計算しなければならない場合に使われます．例えば，`length(list)`を呼ぶとリストの要素数を知るのにリスト全体の要素を反復します．対して`size`はあらかじめ計算されてどこかに格納されているので軽い処理で値を求めることができます．つまりバイナリのサイズを手に入れるためには軽い`size`を使います，しかしユニコードの文字数を知るには，string全体を反復して調べる必要があるために`String.length`を使います．
 
-Each character in the string "héllò" above is an Unicode codepoint. One may use `String.codepoints` to split a string into smaller strings representing its codepoints:
+string "héllò" の中の各文字はユニコードエンドポイントです．`String.codepoints`を使うとstringをコードポイント毎に分割した小さなstringにできます．
 
 ```iex
 iex> String.codepoints "héllò"
 ["h", "é", "l", "l", "ó"]
 ```
 
-The Unicode standard assigns an integer value to each character. Elixir allows a developer to retrieve or insert a character based on its integer codepoint value as well:
+ユニコード標準は各文字に対して整数を割り当てています．エリクサーでは以下のように整数のコードポイントを元に文字を調べたり挿入したりできます:
 
 ```iex
 # Getting the integer codepoint
@@ -247,7 +247,7 @@ iex> "h\xE9ll\xF2"
 "héllò"
 ```
 
-UTF-8 also plays nicely with pattern matching. In the example below, we are extracting the first UTF-8 codepoint of a String and assigning the rest of the string to the variable `rest`:
+UTF-8はパターンマッチングもうまくできます．以下の例は，stringの最初のUTF-8コードポイントを抽出して，残りのstringを`rest`に割り当てています:
 
 ```iex
 iex> << eacute :: utf8, rest :: binary >> = "épa"
@@ -260,18 +260,18 @@ iex> rest
 "pa"
 ```
 
-In general, you will find working with binaries and strings in Elixir a breeze. Whenever you want to work with raw binaries, one can use [Erlang's binary module](http://www.erlang.org/doc/man/binary.html), and use [Elixir's String module](http://elixir-lang.org/docs/stable/String.html) when you want to work on strings, which are simply UTF-8 encoded binaries.
+一般的に，エリクサーでバイナリとstringを扱うのは簡単です．もしもっと生々しいバイナリをいじりたくなった場合，[Erlang's binary module](http://www.erlang.org/doc/man/binary.html)を使うこともできますし，UTF-8でエンコードされたstringとして扱いたいなら[Elixir's String module](http://elixir-lang.org/docs/stable/String.html)を使うことができます．
 
-## 2.5 Blocks
+## 2.5 ブロック
 
-One of the first control flow constructs we usually learn is the conditional `if`. In Elixir, we could write `if` as follow:
+たいてい最初に学ぶフロー制御構造は`if`条件です．エリクサーでも以下のように`if`を書けます:
 
 ```iex
 iex> if true, do: 1 + 2
 3
 ```
 
-The `if` expression can also be written using the block syntax:
+`if`式はブロック構文を使っても書けます:
 
 ```iex
 iex> if true do
@@ -281,7 +281,7 @@ iex> if true do
 13
 ```
 
-You can think of `do`/`end` blocks as a convenience for passing a group of expressions to `do:`. It is exactly the same as:
+`do`/`end`ブロックについて，式のまとまりを`:do`へ渡すための便利な方法を考えることもできます．これは以下と同じです:
 
 ```iex
 iex> if true, do: (
@@ -291,7 +291,7 @@ iex> if true, do: (
 13
 ```
 
-We can pass an `else` clause in the block syntax:
+ブロック構文の中で`else`節を渡すこともできます:
 
 ```elixir
 if false do
@@ -301,7 +301,7 @@ else
 end
 ```
 
-It is important to notice that `do`/`end` always binds to the farthest function call. For example, the following expression:
+`do`/`end`は常に一番遠い関数呼び出しにバインドされることに気をつけることが大事です．例えば，次の式
 
 ```elixir
 is_number if true do
@@ -309,7 +309,7 @@ is_number if true do
 end
 ```
 
-Would be parsed as:
+は次のように解析されます:
 
 ```elixir
 is_number(if true) do
@@ -317,7 +317,7 @@ is_number(if true) do
 end
 ```
 
-Which is not what we want since `do` is binding to the farthest function call, in this case `is_number`. Adding explicit parenthesis is enough to resolve the ambiguity:
+この場合の`is_number`のように，一番遠い関数呼び出しにバインドされることを望まない場合，明示的に括弧を追加することであいまいさを解決できます:
 
 ```elixir
 is_number(if true do
@@ -325,13 +325,13 @@ is_number(if true do
 end)
 ```
 
-## 2.6 Control flow structures
+## 2.6 フロー制御構造
 
-In this section we'll describe Elixir's main control flow structures.
+この節ではエリクサーの主なフロー制御構造について詳しくみていきます．
 
-### 2.6.1 Revisiting pattern matching
+### 2.6.1 パターンマッチング再び
 
-At the beginning of this chapter we have seen some pattern matching examples:
+この章の最初にいくつかのパターンマッチングの例をみました:
 
 ```iex
 iex> [h | t] = [1,2,3]
@@ -342,9 +342,9 @@ iex> t
 [2, 3]
 ```
 
-In Elixir, `=` is not an assignment operator as in programming languages like Java, Ruby, Python, etc. `=` is actually a match operator which will check if the expressions on both left and right side match.
+エリクサーにおいて，Java,Ruby,Pythonなど他のプログラミング言語とは違い，`=`は代入演算子ではありません．`=`は正確に言うと，左辺と右辺の式がマッチしてるかを調べるマッチ演算子です．
 
-Many control-flow structures in Elixir rely extensively on pattern matching and the ability for different clauses to match. In some cases, you may want to match against the value of a variable, which can be achieved with the `^` operator:
+エリクサーの多くのフロー制御構造は，パターンマッチングと，異なる節をマッチさせられる能力を大きく利用しています．いくつかの場合，変数の値にマッチさせたいことがあります，その時は`^`演算子を使うと参照専用とすることができます．
 
 ```iex
 iex> x = 1
@@ -357,7 +357,7 @@ iex> x = 2
 2
 ```
 
-In Elixir, it is a common practice to assign a value to underscore `_` if we don't intend to use it. For example, if only the head of the list matters to us, we can assign the tail to underscore:
+エリクサーでは，使おうと考えていない値は`_`に割り当てることがよく行われています．例えば，もしリストの先頭にだけ興味がある場合，残りにはアンダースコアを割り当てます:
 
 ```iex
 iex> [h | _] = [1,2,3]
@@ -366,23 +366,23 @@ iex> h
 1
 ```
 
-The variable `_` in Elixir is special in that it can never be read from. Trying to read from it gives an unbound variable error:
+エリクサーでの変数`_`は特別で，絶対にどこからも読まれることがありません．読もうとすると unbound variable error になります:
 
 ```iex
 iex> _
 ** (ErlangError) erlang error {:unbound_var, :_}
 ```
 
-Although pattern matching allows us to build powerful constructs, its usage is limited. For instance, you cannot make function calls on the left side of a match. The following example is invalid:
+パターンマッチングは強力なのですが，使用方法に制限があります．例えば，マッチの左側で関数呼び出しをすることができません．以下の例はうまくいきません:
 
 ```iex
 iex> length([1,[2],3]) = 3
 ** (ErlangError) erlang error :illegal_pattern
 ```
 
-### 2.6.2 Case
+### 2.6.2 ケース
 
-A `case` allows us to compare a value against many patterns until we find a matching one:
+`case`は複数のパターンからいずれかがマッチするまでの比較をすることができます:
 
 ```elixir
 case { 1, 2, 3 } do
@@ -395,7 +395,7 @@ case { 1, 2, 3 } do
 end
 ```
 
-As in the `=` operator, any assigned variable will be overridden in the match clause. If you want to pattern match against a variable, you need to use the `^` operator:
+`=`演算子と同様に，変数はmatch節で割り当てられた値で上書きされることがあります．もし変数に対してパターンマッチしたい場合には，`^`演算子を使う必要があります．
 
 ```elixir
 x = 1
@@ -405,7 +405,7 @@ case 10 do
 end
 ```
 
-Each match clause also supports special conditions specified via guards:
+それぞれのmatch節にガード経由で期待している条件を書くことができます:
 
 ```elixir
 case { 1, 2, 3 } do
@@ -418,14 +418,14 @@ case { 1, 2, 3 } do
 end
 ```
 
-In the example above, the second clause will only match when x is positive. The Erlang VM only allows a limited set of expressions as guards:
+上の例だと，xが正の場合2番目の節のみがマッチします．Erlang VMではガードとして使える式を限定して許可しています:
 
-* comparison operators (`==`, `!=`, `===`, `!==`, `>`, `<`, `<=`, `>=`);
-* boolean operators (`and`, `or`) and negation operators (`not`, `!`);
-* arithmetic operators (`+`, `-`, `*`, `/`);
-* `<>` and `++` as long as the left side is a literal;
-* the `in` operator;
-* all the following type check functions (the number preceded by slash represents number of arguments):
+* 比較演算子(`==`, `!=`, `===`, `!==`, `>`, `<`, `<=`, `>=`);
+* ブール演算子(`and`, `or`)と否定演算子(`not`, `!`);
+* 算術演算子(`+`, `-`, `*`, `/`);
+* `<>`と`++`の左側がリテラルのもの;
+* `in`演算子;
+* 以下の全ての型チェック関数(スラッシュのあとの数は引数の数を表しています):
 
     * is_atom/1
     * is_binary/1
@@ -445,7 +445,7 @@ In the example above, the second clause will only match when x is positive. The 
     * is_tuple/1
     * is_exception/1
 
-* plus these functions:
+* 加えてこれらの関数:
 
     * abs(Number)
     * bit_size(Bitstring)
@@ -465,7 +465,7 @@ In the example above, the second clause will only match when x is positive. The 
     * trunc(Number)
     * tuple_size(Tuple)
 
-Many independent guard clauses can also be given at the same time. For example, consider a function that checks if the first element of a tuple or a list is zero. It could be written as:
+複数の独立したガード節を同時に渡すこともできます．例えば，tupleかlistの最初の要素が0であるかどうかチェックする関数について考えてみましょう．以下のように書くことができます:
 
 ```elixir
 def first_is_zero?(tuple_or_list) when
@@ -474,7 +474,7 @@ def first_is_zero?(tuple_or_list) when
 end
 ```
 
-However, the example above will always fail. If the argument is a list, calling `elem` on a list will raise an error. If the element is a tuple, calling `hd` on a tuple will also raise an error. To fix this, we can rewrite it to become two different clauses:
+しかし，上記の例は常に失敗します．もし引数がlistなら，`elem`をリストに対して呼び出してエラーが発生します．もし要素がtupleなら，`hd`をtupleに対して呼び出すとエラーが発生します．これを直すため，2つの異った節となるように書き直します:
 
 ```elixir
 def first_is_zero?(tuple_or_list)
@@ -484,11 +484,11 @@ def first_is_zero?(tuple_or_list)
 end
 ```
 
-In such cases, if there is an error in one of the guards, it won't affect the next one.
+こうすると，ガードの一つがエラーになっても，次のガードには影響しません．
 
-### 2.6.3 Functions
+### 2.6.3 関数
 
-In Elixir, anonymous functions can accept many clauses and guards, similar to the `case` mechanism we have just seen:
+エリクサーでは，匿名関数が複数の節とガードを受けつけ，先程見た`case`に似た形式になります:
 
 ```elixir
 f = fn
@@ -499,8 +499,8 @@ end
 f.(1, 3)  #=> 4
 f.(-1, 3) #=> -3
 ```
-
-As Elixir is an immutable language, the binding of the function is also immutable. This means that setting a variable inside the function does not affect its outer scope:
+v
+Elixir はイミュータブルな言語であるので，関数のバインディングもイミュータブルです． これは，関数の内側で設定した変数は，関数の外側には影響を及ぼさないことを意味しています:
 
 ```elixir
 x = 1
@@ -508,24 +508,24 @@ x = 1
 x #=> 1
 ```
 
-### 2.6.4 Receive
+### 2.6.4 受信
 
-This next control-flow mechanism is essential to Elixir's actors. In Elixir, the code is run in separate processes that exchange messages between them. Those processes are not Operating System processes (they are actually quite light-weight) but are called so since they do not share state with each other.
+次のフロー制御構造はエリクサーのactorにとって欠くことのできないものです．エリクサーでは，コードは別々のプロセスで動作し，それぞれにメッセージを交換します．それらのプロセスはOSのプロセスではありません(とても軽いです)が，お互いに状態を共有しないのでこう呼ばれています．
 
-In order to exchange messages, each process has a mailbox where the received messages are stored. The `receive` mechanism allows us to go through this mailbox searching for a message that matches the given pattern. Here is an example that uses the arrow operator `<-` to send a message to the current process and then collects this message from its mailbox:
+メッセージを交換するため，各プロセスは受信したメッセージを貯めておけるメールボックスというものを持っています．`receive`で与えられたパターンに合致するメッセージを探しにいくことができるようになります．以下は矢印演算子`<-`を使ってメッセージを現在のプロセスへ送り，メールボックスからそのメッセージを収集する例です:
 
 ```iex
-# Get the current process id
+# 現在のプロセスIDを取得します
 iex> current_pid = self
 
-# Spawn another process that will send a message to current_pid
+# 現在のプロセスIDへメッセージを送る，別のプロセスを生成します
 iex> spawn fn ->
   current_pid <- { :hello, self }
 end
 <0.36.0>
 
 
-# Collect the message
+# メッセージを集めます
 iex> receive do
 ...>   { :hello, pid } ->
 ...>     IO.puts "Hello from #{inspect(pid)}"
@@ -533,7 +533,7 @@ iex> receive do
 Hello from <0.36.0>
 ```
 
-You may not see exactly `<0.36.0>` back, but something similar. If there are no messages in the mailbox, the current process will hang until a matching message arrives unless an after clause is given:
+もしかしたら`<0.36.0>`が戻ってこないことがあるかもしれませんが，何か似たものがくるはずです．もしメールボックスにメッセージがない場合，after節を与えられていなければ，今のプロセスはメッセージがくるまで止まります．
 
 ```iex
 iex> receive do
@@ -546,11 +546,11 @@ iex> receive do
 Too late
 ```
 
-Notice we spawned a new process using the `spawn` function passing another function as argument. We will talk more about those processes and even how to exchange messages in between different nodes in a later chapter.
+`spawn`関数へ引数として別の関数を渡して新しいプロセスを生成したことに注目してください．後の章でこれらのプロセスのことや異なるノード間でのメッセージの交換についてお話しします．
 
 ### 2.6.5 Try
 
-`try` in Elixir is used to catch values that are thrown. Let's start with an example:
+エリクサーでは`try`は投げられた値を受けとるのに使われます．例をみてみましょう:
 
 ```iex
 iex> try do
@@ -561,7 +561,7 @@ iex> try do
 13
 ```
 
-`try/catch` is a control-flow mechanism, useful in rare situations where your code has complex exit strategies and it is easier to `throw` a value back up in the stack. `try` also supports guards in `catch` and an `after` clause that is invoked regardless of whether or not the value was caught:
+`try/catch`はコードが複雑な出口戦略を持っており，スタックから値を戻すのに`throw`を使った方が簡単，という珍しい状況で役に立つフロー制御機構です．`try`では`catch`の中でガードが使え，値をキャッチしたかどうかにかかわらず呼び出される`after`節も使えます:
 
 ```iex
 iex> try do
@@ -576,7 +576,7 @@ Didn't catch
     erl_eval:expr/3
 ```
 
-Notice that a thrown value which hasn't been caught halts the software. For this reason, Elixir considers such clauses unsafe (since they may or may not fail) and does not allow variables defined inside `try/catch/after` to be accessed from the outer scope:
+投げられた値を誰も受け取らなかった場合にソフトウェアが停止してしまうことに注意してください．こういった理由から，Elixirはこの節は安全でないと考えていて(うまくいくかもしれないし，失敗するかもしれないため)`try/catch/after`の中の変数に外側のスコープからアクセスすることはできません:
 
 ```iex
 iex> try do
@@ -589,7 +589,7 @@ iex> new_var
 ** (UndefinedFunctionError) undefined function: IEx.Helpers.new_var/0
 ```
 
-The common strategy is to explicitly return all arguments from `try`:
+一般的なやり型としては`try`からの値を引数として明示的に全て返します:
 
 ```elixir
 { x, y } = try do
@@ -603,9 +603,9 @@ end
 x #=> returns the value of x or nil for failures
 ```
 
-### 2.6.6 If and Unless
+### 2.6.6 IfとUnless
 
-Besides the four main control-flow structures above, Elixir provides some extra control-flow structures to help on our daily work. For example, `if` and `unless`:
+上にあげたような主だったフロー制御構造の他に，日々の仕事の助けになるようなフロー制御構造がいくつかあります．例えば`if`と`unless`です:
 
 ```iex
 iex> if true do
@@ -619,14 +619,14 @@ iex> end
 nil
 ```
 
-Remember that `do/end` blocks in Elixir are simply a shortcut to the keyword notation. So one could also write:
+エリクサーでは`do/end`ブロックは単なるキーワード表記のショートカットであることを思いだしてください． ですから以下のようにも書けます:
 
 ```iex
 iex> if true, do: "This works!"
 "This works!"
 ```
 
-Or even more complex examples like:
+もっと複雑な例ですと:
 
 ```elixir
 # This is equivalent...
@@ -640,11 +640,11 @@ else
 end
 ```
 
-In Elixir, all values except `false` and `nil` evaluate to true. Therefore there is no need to explicitly convert the `if` argument to a boolean. If you want to check if one of many conditions are true, you can use the `cond` macro.
+エリクサーでは`false`と`nil`以外の全ての値がtrueと評価されます．つまり`if`の引数を明示的にブーリアンへ変換しなくてもかまいません．もし複数の条件のうちいずれかがtrueであることをチェックしたい場合，`cond`マクロを使うことができます．
 
 ### 2.6.7 Cond
 
-Whenever you want to check for many conditions at the same time, Elixir allows developers to use `cond` instead of nesting many `if` expressions:
+一度に複数の条件をチェックしたい場合，エリクサーでは複数の`if`式を入れ子にするかわりに`cond`を使うことができます:
 
 ```elixir
 cond do
@@ -657,7 +657,7 @@ cond do
 end
 ```
 
-If none of the conditions return true, an error will be raised. For this reason, it is common to see a last condition equal to `true`, which will always match:
+もしどの条件もtrueにならなかった場合，エラーが発生します．そのため，通常は条件の最後が`true`になるようにして，常にマッチするようにします:
 
 ```elixir
 cond do
@@ -670,17 +670,17 @@ cond do
 end
 ```
 
-## 2.7 Built-in functions
+## 2.7 組み込み関数
 
-Elixir ships with many built-in functions automatically available in the current scope. In addition to the control flow expressions seen above, Elixir also adds: `elem` and `set_elem` to read and set values in tuples, `inspect` that returns the representation of a given data type as a binary, and many others. All of these functions imported by default are available in [`Kernel`](/docs/stable/Kernel.html) and [Elixir special forms are available in `Kernel.SpecialForms`](/docs/stable/Kernel.SpecialForms.html).
+エリクサーは現在のスコープで沢山の組み込み関数を自動的に使えるように用意しています．上で見たようなフロー制御式に加え，tupleの中の値を読み書きするのに`elem`や`set_elem`，与えられたデータ型をバイナリで表現するのに`inspect`，などなどです．これらの関数は[`Kernel`](/docs/stable/Kernel.html)や[Elixir special forms are available in `Kernel.SpecialForms`](/docs/stable/Kernel.SpecialForms.html)にあり，デフォルトでインポートされています．
 
-All of these functions and control flow expressions are essential for building Elixir programs. In some cases though, one may need to use functions available from Erlang, let's see how.
+これらの関数とフロー制御式はエリクサーでのプログラミングに欠かせないものです．いくつかの場合Erlangにある関数を使う必要があるかもしれません，その方法を見てみましょう．
 
-## 2.8 Calling Erlang functions
+## 2.8 Erlangの関数を呼びだす
 
-One of Elixir's assets is easy integration with the existing Erlang ecosystem. Erlang ships with a group of libraries called OTP (Open Telecom Platform). Besides being a standard library, OTP provides several facilities to build OTP applications with supervisors that are robust, distributed and fault-tolerant.
+既にあるErlangのエコシステムとの統合が簡単であることがエリクサーの資産の一つです．ErlangはOTP(Open Telecom Platform)と呼ばれるライブラリ群を出しています．標準ライブラリに加え，OTPは堅牢，分散，フォールトトレラントなOTPアプリケーションをスーパーバイザーと共に構築する機能を提供します．
 
-Since an Erlang module is nothing more than an atom, invoking those libraries from Elixir is quite straight-forward. For example, we can call the [function `flatten` from the module `lists`](http://www.erlang.org/doc/man/lists.html#flatten-1) or interact with [the `math` module](http://www.erlang.org/doc/man/math.html) as follows:
+Erlangのモジュールはatomそのものなため，エリクサーからそれらを呼び出すのはすぐにできます．例えば，[`lists`モジュールから`flatten`関数](http://www.erlang.org/doc/man/lists.html#flatten-1)を呼んだり[`math`モジュール](http://www.erlang.org/doc/man/math.html)と触れあったりというのは以下のようにできます:
 
 ```iex
 iex> :lists.flatten [1,[2],3]
@@ -689,9 +689,9 @@ iex> :math.sin :math.pi
 1.2246467991473532e-16
 ```
 
-Erlang's OTP is very well documented and we will learn more about building OTP applications in the Mix chapters:
+ErlangのOTPはとでも良く文章化されており，私たちは後に出てくるMixの章でOTPアプリケーションの構築方法について学びます．
 
 * [OTP docs](http://www.erlang.org/doc/)
 * [Standard library docs](http://www.erlang.org/doc/man/STDLIB_app.html)
 
-That's all for now. The next chapter will discuss how to organize our code into modules so it can be easily reused between different applications.
+今回はここまでです．次の章では，異なるアプリケーションから簡単にコードを再利用できるようにするためのモジュールへのまとめ方を話していきます．
