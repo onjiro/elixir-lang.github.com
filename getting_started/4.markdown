@@ -1,23 +1,23 @@
 ---
 layout: getting_started
-title: 4 Records, Protocols & Exceptions
+title: 4 レコード，プロトコル & 例外
 guide: 4
 total_guides: 7
 ---
 
 # {{ page.title }}
 
-Elixir provides both records and protocols. This chapter will outline the main features of both and provide some examples. More specifically, we will learn how to use `defrecord`, `defprotocol` and `defimpl`. At the end, we will briefly talk about exceptions in Elixir.
+エリクサーはレコードとプロトコルを提供しています．この章ではその2つについて概要をお知らせしつつ，いくつかの例を見ていきます．特に`defmacro`，`defprotocol`そして`defimpl`をどのように使うかを学びます．そして最後に少しだけエリクサーの例外について話します．
 
-## 4.1 Records
+## 4.1 レコード
 
-Records are simple structures that hold values. For example, we can define a `FileInfo` record that is supposed to store information about files as follows:
+レコードは値を保持するシンプルな構造です．例えば`FileInfo`レコードはファイルの情報を以下のように保持します:
 
 ```elixir
 defrecord FileInfo, atime: nil, accesses: 0
 ```
 
-The line above will define a module named `FileInfo` which contains a function named `new` that returns a new record and other functions to read and set the values:
+上の行では新しいレコードを返す`new`という名前の関数と，値を読み書きする関数を持った`FileInfo`という名前のモジュールを定義します:
 
 ```iex
 iex> file_info = FileInfo.new(atime: { 2010, 4, 17 }, accesses: 42)
@@ -29,16 +29,16 @@ iex> file_info.atime
 {2010, 4, 17}
 ```
 
-Notice that when we change the `atime` field of the record, we re-store the record in the `file_info` variable. This is because as almost everything else in Elixir, records are immutable. So changing the `atime` field does not update the record in place. Instead, it returns a new record with the new value set.
+レコードの`atime`フィールドを変更した場合，自分達で`file_info`へ再保存することを忘れないでください．これは，エリクサーの他のほぼ全てのものと同じように，レコードもイミュータブルであるためです．そのため`atime`フィールドの変更はレコード内には反映されません．そのかわり，新しい値がセットされた，新しいレコードが返ります．
 
-A record is simply a tuple where the first element is the record module name. We can get the record raw representation as follows:
+レコードは単に最初の要素がレコードのモジュール名であるタプルです．以下のようにしてレコードの未加工な表現を取得できます:
 
 ```elixir
 inspect FileInfo.new, raw: true
 #=> "{ FileInfo, nil, 0 }"
 ```
 
-Besides defining readers and writers for each attribute, Elixir records also define an `update_#{attribute}` function to update values. Such functions expect a function as argument that receives the current value and must return the new one. For example, every time the file is accessed, the accesses counter can be incremented with:
+エリクサーのレコードは各属性の読み書きを定義するだけでなく，`update_#{attribute}`関数による値の更新も定義します．この関数は引数として現在の値を受けとり，新しい値を必ず返す関数を求めます．例えばファイルにアクセスされるたび，アクセスカウンターを増加させるのは:
 
 ```elixir
 file_info = FileInfo.new(accesses: 10)
@@ -46,9 +46,9 @@ file_info = file_info.update_accesses(fn(x) -> x + 1 end)
 file_info.accesses #=> 11
 ```
 
-### 4.1.1 Pattern matching
+### 4.1.1 パターンマッチング
 
-Elixir also allows one to pattern match against records. For example, imagine we want to check if a file was accessed or not based on the `FileInfo` record above, we could implement it as follows:
+エリクサーはレコードに対してもパターンマッチできます．例えば，さきほど書いた`FileInfo`レコードを利用して，ファイルアクセスがあったか，あるいはなかったかを調べたいとすると，以下のように実装できます:
 
 ```elixir
 defmodule FileAccess do
@@ -57,41 +57,40 @@ defmodule FileAccess do
 end
 ```
 
-The first clause will only match if a `FileInfo` record is given and its `accesses` field is equal to zero. The second clause will match any `FileInfo` record and nothing more. We can also link the value of `accesses` to a variable as follows:
+最初の節は`FileInfo`レコードが与えられて，その`accesses`フィールドが0のときにだけマッチします．二番目の節はどんな`FileInfo`レコードにもマッチします．`access`の値を変数に結びつけるのに以下のような書き方もできます:
 
 ```elixir
 def was_accessed?(FileInfo[accesses: accesses]), do: accesses > 0
 ```
 
-The pattern matching syntax can also be used to create new records:
+パターンマッチング構文は新しいレコードを作るのにも使えます:
 
 ```elixir
 file_info = FileInfo[accesses: 0]
 ```
 
-Whenever using the bracket syntax above, Elixir expands the record to a tuple at compilation time. That said, the clause above:
+上のように角括弧構文を使うとき，エリクサーはコンパイルのときにそのレコードをタプルに展開します．つまり，先ほど挙げた節は:
 
 ```elixir
 def was_accessed?(FileInfo[accesses: 0]), do: false
 ```
 
-Is effectively the same as:
+以下と同じ意味になります:
 
 ```elixir
 def was_accessed?({ FileInfo, _, 0 }), do: false
 ```
+角括弧構文は強力で，パターンマッチングに使えるだけでなく，パフォーマンスについても`FileInfo.new`して`file_info.accesses`するのに比べて速くなります．欠点はレコード名をハードコードすることです．そのため，エリクサーでは両方のスタイルを混ぜて，場合に応じてうまくいきそうな方を使うことができます．
 
-Using the bracket syntax is a powerful mechanism not only due to pattern matching but also regarding performance, since it provides faster times compared to `FileInfo.new` and `file_info.accesses`. The downside is that we hardcode the record name. For this reason, Elixir allows you to mix and match both styles as you may find fit.
+レコードについてさらに詳しい内容は[`defrecord`マクロのマニュアルを見てください](http://elixir-lang.org/docs/master/Kernel.html#defrecord/3)
 
-For more information on records, [check out the documentation for the `defrecord` macro](http://elixir-lang.org/docs/master/Kernel.html#defrecord/3)
+## 4.2 プロトコル
 
-## 4.2 Protocols
+プロトコルはエリクサーでポリモーフィズムを実現するためのメカニズムです．あるプロトコルを実装したデータ型であれば，そのプロトコルで処理できます．実際の例で考えてみましょう．
 
-Protocols are a mechanism to achieve polymorphism in Elixir. Dispatching a protocol is available to any data type as long as it implements the protocol. Let's consider a practical example.
+エリクサーでは，`false`と`nil`だけがfalseとなります．その他の全てはtrueと評価されます．アプリケーションによっては，ブランクとみなせるデータ型でブール値を返す`blank?`プロトコルを表したいことがあるでしょう．例えば空リストや空バイナリはブランクとみなせます．
 
-In Elixir, only `false` and `nil` are treated as false. Everything else evaluates to true. Depending on the application, it may be important to specify a `blank?` protocol that returns a boolean for other data types that should be considered blank. For instance, an empty list or an empty binary could be considered blanks.
-
-We could define this protocol as follows:
+このプロトコルは以下のように定義できます:
 
 ```elixir
 defprotocol Blank do
@@ -100,7 +99,7 @@ defprotocol Blank do
 end
 ```
 
-The protocol expects a function called `blank?` that receives one argument to be implemented. We can implement this protocol for some Elixir data types in the following way:
+このプロトコルは一つの引数を取る`blank?`関数を実装することを期待しています．以下のようにいくつかのデータ型にこのプロトコルを実装できます:
 
 ```elixir
 # Integers are never blank
@@ -122,7 +121,7 @@ defimpl Blank, for: Atom do
 end
 ```
 
-And we would do so for all native data types. The types available are:
+最初からあるデータ型全てに対して同じようにできます．以下のデータ型があります:
 
 * `Record`
 * `Tuple`
@@ -137,7 +136,7 @@ And we would do so for all native data types. The types available are:
 * `Reference`
 * `Any`
 
-Now, with the protocol defined and implementations in hand, we can invoke it:
+今，プロトコルが定義されていて，それに対する実装をしているなら，呼び出すことができます:
 
 ```elixir
 Blank.blank?(0)       #=> false
@@ -145,7 +144,7 @@ Blank.blank?([])      #=> true
 Blank.blank?([1,2,3]) #=> false
 ```
 
-Notice however that passing a data type that does not implement the protocol raises an error:
+プロトコルを実装していないデータ型を渡すとエラーを発生させるので注意してください:
 
 ```iex
 iex> Blank.blank?("hello")
@@ -154,7 +153,7 @@ iex> Blank.blank?("hello")
 
 ### 4.2.1 Fallback to any
 
-In some cases, it may be convenient to provide a default implementation for all types. This can be achieved by setting `@fallback_to_any` to `true` in the protocol definition:
+いくつかの場合，全ての型に対してデフォルトの実装を提供した方が便利な場合があります．これはプロトコル定義の中で`@fallback_to_any`を`true`に設定するとできます:
 
 ```elixir
 defprotocol Blank do
@@ -163,20 +162,21 @@ defprotocol Blank do
 end
 ```
 
-Which can now be implemented as:
+こうすると以下のように実装できます:
 
 ```elixir
 defimpl Blank, for: Any do
   def blank?(_), do: false
 end
 ```
-Now all data types that we have not implemented the `Blank` protocol for will be considered non-blank.
 
-### 4.2.2 Using protocols with records
+今，`Blank`プロトコルを実装していない全てのデータ型はブランクではないとみなせます．
 
-The power of Elixir extensibility comes when protocols and records are mixed.
+### 4.2.2 プロトコルをレコードと一緒に使う
 
-For instance, Elixir provides a `HashDict` implementation that is an efficient data structure to store many keys. Let's take a look at how it works:
+エリクサーの拡張性はプロトコルとレコードが混在しているところからきています．
+
+例えば，エリクサーは沢山のキーの保持を効率的に行えるデータ構造`HashDict`の実装を提供しています．どんな風に動くのかちょっと見てみましょう:
 
 ```elixir
 dict = HashDict.new
@@ -184,14 +184,14 @@ dict = HashDict.put(dict, :hello, "world")
 HashDict.get(dict, :hello) #=> "world"
 ```
 
-If we inspect our `HashDict`, we can see it is a simple tuple:
+この`HashDict`を調べてみると，単純なタプルを見ることができます:
 
 ```elixir
 inspect(dict, raw: true)
 #=> { HashDict, 1, [{:hello,"world"}] }
 ```
 
-Since `HashDict` is a data structure that contains values, it would be convenient to implement the `Blank` protocol for it too:
+`HashDict`は複数の値を含むデータ構造であるうえ，`Blank`プロトコルを簡単に実装するのにも便利です:
 
 ```elixir
 defimpl Blank, for: HashDict do
@@ -199,7 +199,7 @@ defimpl Blank, for: HashDict do
 end
 ```
 
-And now we can test it:
+そしてこのようにテストできます:
 
 ```elixir
 dict = HashDict.new(hello: "world")
@@ -207,19 +207,19 @@ Blank.blank?(dict)         #=> false
 Blank.blank?(HashDict.new) #=> true
 ```
 
-Excellent! The best of all is that we implemented the `Blank` protocol for an existing data structure (`HashDict`) without a need to wrap it or recompile it, which allows developers to easily extend previously defined protocols. Note this only worked because, when we defined the protocol, we have added `Record` to the list of types supported by the protocol:
+すばらしい！既にあるデータ構造(`HashDict`)へ，ラップしたり再コンパイルせずに`Blank`プロトコルを実装しましたね，これで過去に定義済のプロトコルを簡単に拡張することができます．プロトコルを定義したときにサポート対象のリストに`Record`を追加していた場合にのみ，このような動作をすることに注意してください:
 
 ```elixir
 @only [Atom, Record, Tuple, List, BitString, Any]
 ```
 
-Keep in mind that `Record` needs to come before `Tuple`, since all records are tuples (but not all tuples are records).  For this reason, in case a record does not implement a given protocol, Elixir will fall back to the tuple implementation of that protocol if one exists. So one can add a default protocol implementation for all records by simply defining a default implementation for tuples.
+`Record`は`Tuple`からできていることを覚えておいてください．全てのレコードはタプルです(しかし，全てのタプルはレコードではありません)．この理由により，与えられたプロトコルの実装をレコードがしていない場合．そのプロトコルのタプルでの実装があれば，エリクサーはそれを代わりに使います．ですから，単にタプルへ実装を定義するだけで，簡単に全てのレコードに対してのデフォルト実装を追加することができます．
 
-### 4.2.3 Built-in protocols
+### 4.2.3 組み込みプロトコル
 
-Elixir ships with some built-in protocols. Here are a couple of them:
+エリクサーはいくつかの組み込みプロトコルを同梱しています．そのうちのいくつかをみていきます:
 
-* `Access` - specifies how to access an element. This is the protocol that empowers bracket access in Elixir. For example:
+* `Access` - どうやって要素にアクセスするかを表しています．エリクサーにおいて角括弧を用いてアクセスができるようにします．例えば:
 
 ```iex
 iex> x = [a: 1, b: 2]
@@ -230,7 +230,7 @@ iex> x[:b]
 2
 ```
 
-* `Enumerable` - any data structures that can be enumerated must implement this protocol. This protocol is consumed by the `Enum` module which provides functions like `map`, `reduce` and others:
+* `Enumerable` - 列挙できるなら，どんなデータ構造でもこのプロトコルを実装しなければなりません．このプロトコルは`Enum`モジュールによって提供される`map`や`reduce`などの関数で使われます:
 
 ```iex
 iex> Enum.map [1,2,3], fn(x) -> x * 2 end
@@ -239,7 +239,7 @@ iex> Enum.reduce 1..3, 0, fn(x, acc) -> x + acc end
 6
 ```
 
-* `Binary.Inspect` - this protocol is used to transform any data structure into a readable textual representation. This is what tools like IEx use to print results:
+* `Binary.Inspect` - このプロトコルはあらゆるデータ構造から読むことができるテキスト表現への変換に使われます．IExのようなツールで結果を表示するのに使っています:
 
 ```iex
 iex> { 1, 2, 3 }
@@ -248,28 +248,28 @@ iex> HashDict.new
 #HashDict<[]>
 ```
 
-  Keep in mind that whenever the inspected value starts with `#`, it is representing a data structure in non-valid Elixir syntax. For those, the true representation can be retrieved by calling `inspect` directly and passing `raw` as an option:
+  検査された値は`#`から始まるということを覚えておいてください，これはエリクサーのデータ構造の構文表現としては正しくありません．それを満たす表現は`raw`をオプションに指定して`inspect`を直接呼び出すと得られます:
 
 ```iex
 iex> inspect HashDict.new, raw: true
 "{HashDict,0,[]}"
 ```
 
-* `String.Chars` - specifies how to convert a data structure with characters to a string. It's exposed via the `to_string` function:
+* `String.Chars` - どうやって文字の並びを文字列に変換するかを表しています．これは`to_string`関数を介して公開されています:
 
 ```iex
 iex> to_string :hello
 "hello"
 ```
 
-  Notice that string interpolation in Elixir calls the `to_string` function:
+  エリクサーでの文字列の補完は`to_string`関数を呼んでいることに注意してください:
 
 ```iex
 iex> "age: #{25}"
 "age: 25"
 ```
 
-  The example above only works because numbers implement the `String.Chars` protocol. Passing a tuple, for example, will lead to an error:
+  上の例は数値が`String.Chars`プロトコルを実装しているので動きます．例えばタプルを渡すとエラーになるでしょう:
 
 ```iex
 iex> tuple = {1, 2, 3}
@@ -278,20 +278,20 @@ iex> "tuple: #{tuple}"
 ** (Protocol.UndefinedError) protocol String.Chars not implemented for {1, 2, 3}
 ```
 
-  When there is a need to "print" a more complex data structure, one can simply use the `inspect` function:
+  もっと複雑なデータ構造を"print"したくなった場合，単に`inspect`関数を使うのが簡単です:
 
 ```iex
 iex> "tuple: #{inspect tuple}"
 "tuple: {1, 2, 3}"
 ```
 
-Elixir defines other protocols which can be verified in Elixir's documentation. Frameworks and libraries that you use may define a couple of specific protocols as well. Use them wisely to write code that is easy to maintain and extend.
+エリクサーのドキュメントに書いてある他のプロトコルも使えます．フレームワークやライブラリにある，定義されたプロトコルも同様に使えます．保守や拡張を簡単にするため，それらを賢く使ってコードを書いていきましょう．
 
-## 4.3 Exceptions
+## 4.3 例外
 
-Exception handling would have its own chapter in many languages, but here they play a much lesser role.
+例外処理は多くの言語で独自の章を持つほどでしょうけれども，ここでの役割は少なめです．
 
-An exception can be rescued inside a `try` block with the `rescue` keyword:
+例外は`try`ブロックの中で`rescue`キーワードを使うと拾えます:
 
 ```elixir
 # rescue only runtime error
@@ -318,9 +318,9 @@ rescue
 end
 ```
 
-Notice that `rescue` works with exception names and doesn't allow guards nor pattern matching. This limitation is intentional: developers should not use exception values to drive their software. In fact, **exceptions in Elixir should only be used under exceptional circumstances**.
+`rescue`と例外名にはガードもパターンマッチングも使えないことに注意してください．この制限は意図的なものです: 開発者はソフトウェアを動かすために例外を使うべきではありません．実際に，**エリクサーの例外は例外的な状況でのみ使われるべきです**．
 
-For example, software that does log partitioning and rotation over the network may face network issues or an eventual instability when accessing the file system. These scenarios are not exceptional in this particular software and must be handled accordingly. Therefore, the software can read some file using `File.read` and match the result:
+例えば，ログのパーティショニングとローテーションをネットワーク越しに行うソフトウェアでは，ネットワークの問題やファイルシステムにアクセスした場合に不安定になることが起こり得ます．このソフトウェアにとって，これらのシナリオは例外的なものではなく，うまく合わせて処理しなければなりません．したがって，このソフトウェアではいくつかのファイルを`File.read`を使って読みこみ，結果をマッチさせます:
 
 ```elixir
 case File.read(file) do
@@ -333,24 +333,24 @@ case File.read(file) do
 end
 ```
 
-Notice that `File.read` does not raise an exception in case something goes wrong; it returns a tuple containing `{ :ok, contents }` in case of success and `{ :error, reason }` in case of failure. This allows us to use Elixir's pattern matching constructs to control how our application should behave.
+`File.read`が何かうまくいかなない場合に例外を発生させないことに注意してください;成功した場合には`{ :ok, contents }`，失敗の場合には`{ :error, reason }`を含んだタプルを返します．これにより，私たちのアプリケーションがどのように振る舞うべきか,エリクサーのパターンマッチングを組み合せて制御できます．
 
-On the other hand, a CLI interface that needs to access or manipulate a file given by the user may necessarily expect a file to be there. If the given file does not exist, there is nothing to do but fail. Then you may use `File.read!`, which raises an exception instead:
+一方，ユーザーによって指定されたファイルにアクセスしたり扱ったりするCLIインターフェースでは必ずファイルがあることを前提とすることがあります．もしファイルがなければ，何もしないのではなく，失敗させたいですね．その場合例外を発生させる`File.read!`を使うことができます:
 
 ```iex
 iex> contents = File.read!("/inexistent/file")
 ** (File.Error) could not read file /inexistent/file: no such file or directory
 ```
 
-This pattern is common throughout the Elixir standard library, and many libraries provide both forms.
+このパターンはエリクサーの標準ライブラリーに共通で，多くのライブラリーはどちらの形式も提供しています．
 
-Finally, exceptions are simply records and can be defined with `defexception`, which has a similar API to `defrecord`. But remember, in Elixir you will use those sparingly.
+最後になりますが，例外は`defrecord`に似たAPI`defexception`で定義されている単なるレコードです．しかし，エリクサーではそれを控えめにしか使わないことを覚えておいてください．
 
-This showcases Elixir's philosophy of not using exceptions for control-flow. If you feel like you need to rescue an exception in order to change how your code works, you should probably return an atom or tuple instead to allow pattern matching.
+例外を制御フローのために使わないエリクサーの哲学を紹介しています．もしコードが動くようにするために例外をrescueしなればならないと感じたなら，たぶん，そのかわりにアトムかタプルといったパターンマッチングできるようなものを返すべきです．
 
-Next, let's take a look at how Elixir tackles productivity by building some macros using `defmacro` and `defmacrop`!
+次に，`defmacro`と`defmacrop`を使い，マクロを構築して，エリクサーがどのように生産性に立ち向かっているか見ていきましょう!
 
-> Note: In order to ease integration with Erlang APIs, Elixir also supports "catching errors" coming from Erlang with `try/catch`, as it works in Erlang:
+>注意: Erlangとの統合を容易にするため，エリクサーでは，Erlangでも動作するように`try/catch`を使った場合に来る"catching errors"を取り扱えるようになっています:
 >
 >
 >     try do
@@ -361,4 +361,4 @@ Next, let's take a look at how Elixir tackles productivity by building some macr
 >     end
 >
 >
-> The first atom can be one of `:error`, `:throw` or `:exit`. Keep in mind that catching errors is as discouraged as rescuing exceptions in Elixir.
+> 最初のアトムは`:error`，`:throw`か`:exit`のいずれかになります．エリクサーでは例外の救出をすることだけが推奨されていることを忘れないでください．
