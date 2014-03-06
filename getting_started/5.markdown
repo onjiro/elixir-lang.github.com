@@ -1,68 +1,68 @@
 ---
 layout: getting_started
-title: 5 Macros
+title: 5 マクロ
 guide: 5
 total_guides: 7
 ---
 
 # {{ page.title }}
 
-An Elixir program can be represented by its own data structures. This chapter will describe what those structures look like and how to manipulate them to create your own macros.
+Elixirでは自身の構造を自身で表現できます．この章ではそれらの構造がどういった形で見えるか，また，その構造を，あなたが作ったマクロからどうやって操作するかについて詳しくみていきます．
 
-## 5.1 Building blocks of an Elixir program
+## 5.1 エリクサープログラムの構成要素
 
-The building block of Elixir is a tuple with three elements. The function call `sum(1,2,3)` is represented in Elixir as:
+エリクサーは3要素のタプルで構成されています．Elixirでは`sum(1,2,3)`の関数呼び出しは以下のように表現されます:
 
 ```elixir
 { :sum, [], [1, 2, 3] }
 ```
 
-You can get the representation of any expression by using the `quote` macro:
+`quote`マクロを使うことでどんな式の表現でも取得することができます:
 
 ```iex
 iex> quote do: sum(1, 2, 3)
 { :sum, [], [1, 2, 3] }
 ```
 
-Operators are also represented as such tuples:
+演算子もタプルで表現されています:
 
 ```iex
 iex> quote do: 1 + 2
 { :+, [], [1, 2] }
 ```
 
-Even a tuple is represented as a call to `{}`:
+タプルも`{}`を呼びだすことで表現されています:
 
 ```iex
 iex> quote do: { 1, 2, 3 }
 { :{}, [], [1, 2, 3] }
 ```
 
-Variables are also represented using tuples, except the last element is an atom, instead of a list:
+変数もタプルを使うことで表現されています．ただし，最後の要素はリストではなくアトムになります:
 
 ```iex
 iex> quote do: x
 { :x, [], Elixir }
 ```
 
-When quoting more complex expressions, we can see the representation is composed of such tuples, which are nested on each other resembling a tree where each tuple is a node:
+もっと複雑な式をクォートする場合，各ノードがタプルとなっている，入れ子になった木構造で，それぞれの木構造はお互いに似た形をしたタプルの集まりとして表現されます．
 
 ```iex
 iex> quote do: sum(1, 2 + 3, 4)
 { :sum, [], [1, { :+, [], [2, 3] }, 4] }
 ```
 
-In general, each node (tuple) above follows the following format:
+通常，上でみた通り，ノード(タプル)毎のフォーマットは以下のようになります:
 
 ```elixir
 { tuple | atom, list, list | atom }
 ```
 
-* The first element of the tuple is an atom or another tuple in the same representation;
-* The second element of the tuple is an list of metadata, it may hold information like the node line number;
-* The third element of the tuple is either a list of arguments for the function call or an atom. When an atom, it means the tuple represents a variable.
+* タプルの1番目の要素は，アトムか同じ表現の別のタプル;
+* タプルの2番目の要素は，メタデータのリスト．ノードの行番号などを保持する;
+* タプルの3番目の要素は，関数の呼び出しのための引数のリストかアトム．アトムの場合，このタプルは変数を表現している．
 
-Besides the node defined above, there are also five Elixir literals that when quoted return themselves (and not a tuple). They are:
+上に書いたノード定義の他に，クォートされたときに（タプルではなく）自身を返すエリクサーのリテラルが5つあります．それらは
 
 ```elixir
 :sum         #=> Atoms
@@ -72,11 +72,11 @@ Besides the node defined above, there are also five Elixir literals that when qu
 {key, value} #=> Tuples with two elements
 ```
 
-With those basic structures in mind, we are ready to define our own macro.
+これらの基礎構造を心に留めておけば，自分達でマクロを定義できそうです．
 
-## 5.2 Defining our own macro
+## 5.2 自分達のマクロを定義する
 
-A macro can be defined using `defmacro`. For instance, in just a few lines of code we can define a macro called `unless` which does the opposite of `if`:
+マクロは`defmacro`を使って定義されます．例えば`if`と逆のことをする`unless`というマクロをわずか数行で定義することができます:
 
 ```elixir
 defmodule MyMacro do
@@ -86,28 +86,28 @@ defmodule MyMacro do
 end
 ```
 
-Similarly to `if`, `unless` expects two arguments: a `clause` and `options`:
+`if`と同様に，`unless`は`clause`と`options`という2つの引数を期待しています:
 
 ```elixir
 require MyMacro
 MyMacro.unless var, do: IO.puts "false"
 ```
 
-However, since `unless` is a macro, its arguments are not evaluated when it's invoked but are instead passed literally. For example, if one calls:
+しかし，`unless`はマクロなので，その引数は呼び出されたときに評価されるのではなくそのまま渡されます．例えば，このように呼び出すと:
 
 ```elixir
 unless 2 + 2 == 5, do: call_function()
 ```
 
-Our `unless` macro will receive the following:
+`unless`マクロは以下のように受け取ります:
 
 ```elixir
 unless({:==, [], [{:+, [], [2, 2]}, 5]}, { :call_function, [], [] })
 ```
 
-Then our `unless` macro will call `quote` to return a tree representation of the `if` clause. This means we are transforming our `unless` into an `if`!
+そして`unless`マクロは`if`節の木表現を返すために`quote`を呼び出します．つまり`unless`を`if`へ変換していることになります！
 
-There is a common mistake when quoting expressions which is that developers usually forget to `unquote` the proper expression. In order to understand what `unquote` does, let's simply remove it:
+式をクォートした場合によくある失敗は，開発者が`unquote`してふさわしい式にするのを忘れてしまうことです．`unquote`が何をしているか知るために消してみます:
 
 ```elixir
 defmacro unless(clause, options) do
@@ -115,13 +115,13 @@ defmacro unless(clause, options) do
 end
 ```
 
-When called as `unless 2 + 2 == 5, do: call_function()`, our `unless` would then literally return:
+`unless 2 + 2 == 5, do: call_function()`のように呼ぶと，`unless`は何もせずに返します:
 
 ```elixir
 if(!clause, options)
 ```
 
-Which would fail because the clause and options variables are not defined in the current scope. If we add `unquote` back:
+現在のスコープにはclauseとoptionsという変数が定義されていないので失敗します．`unquote`を戻すと:
 
 ```elixir
 defmacro unless(clause, options) do
@@ -129,19 +129,19 @@ defmacro unless(clause, options) do
 end
 ```
 
-`unless` will then return:
+`unless`はこんな形で返します:
 
 ```elixir
 if(!(2 + 2 == 5), do: call_function())
 ```
 
-In other words, `unquote` is a mechanism to inject expressions into the tree being quoted and it is an essential tool for meta-programming. Elixir also provides `unquote_splicing` allowing us to inject many expressions at once.
+別の言い方をすると，`unquote`とはクォートされた木構造へ式を差し込む方式で，メタプログラミングをするのに欠かせない要素です．エリクサーではそれとは別に`unquote_splicing`という複数の式を一度に差し込む方法も提供しています．
 
-We can define any macro we want, including ones that override the built-in macros provided by Elixir. For instance, you can redefine `case`, `receive`, `+`, etc. The only exceptions are Elixir special forms that cannot be overridden, [the full list of special forms is available in `Kernel.SpecialForms`](/docs/stable/Kernel.SpecialForms.html).
+マクロは望むように定義することができます．エリクサーがあらかじめ提供しているマクロでさえも例外ではなく，上書きすることができます．例えば`case`, `receive`, `+`などを再定義することができます．Elixirのスペシャルフォームだけは例外的に上書きできません．[スペシャルフォームの全一覧は`Kernel.SpecialForms`にあります](/docs/stable/Kernel.SpecialForms.html).
 
-## 5.3 Macros hygiene
+## 5.3 マクロの健全さ
 
-Elixir macros have late resolution. This guarantees that a variable defined inside a quote won't conflict with a variable defined in the context where that macro is expanded. For example:
+エリクサーのマクロは決定を遅らせます．これにより，クォートの中で定義された変数は，マクロ展開後のコンテキストにある変数と競合しないことが保証されています．例えば:
 
 ```elixir
 defmodule Hygiene do
@@ -163,7 +163,7 @@ HygieneTest.go
 # => 13
 ```
 
-In the example above, even if the macro injects `a = 1`, it does not affect the variable `a` defined by the `go` function. In case the macro wants to explicitly affect the context, it can use `var!`:
+上の例にあるように，マクロが`a = 1`を挿入しても，`go`関数によって定義されている`a`には影響しません．明示的にコンテキストに影響を与えたい場合は`var!`を使うことができます．
 
 ```elixir
 defmodule Hygiene do
@@ -185,11 +185,11 @@ HygieneTest.go
 # => 1
 ```
 
-Variables hygiene only works because Elixir annotates variables with their context. For example, a variable `x` defined at the line 3 of a module, would be represented as:
+エリクサーがコンテキストの中の変数に注釈をつけているので，変数は健全に保たれています．例えば，モジュールの3行目で変数`x`が定義されているとき，このように表現されます:
 
     { :x, [line: 3], nil }
 
-However, a quoted variable is represented as:
+一方クォートされた変数はこのようになります:
 
 ```elixir
 defmodule Sample do
@@ -201,13 +201,13 @@ end
 Sample.quoted #=> { :x, [line: 3], Sample }
 ```
 
-Notice that the third element in the quoted variable is the atom `Sample`, instead of `nil`, which marks the variable as coming from the `Sample` module. Therefore, Elixir considers those two variables come from different contexts and handle them accordingly.
+クォートされた変数の3番目の要素は，`nil`ではなく`Sample`というアトムであることに注目してください．これは変数が`Sample`モジュール由来であることを表しています．2つの変数は違うコンテキストから来ているので，別々のものとして扱います．
 
-Elixir provides similar mechanisms for imports and aliases too. This guarantees macros will behave as specified by its source module rather than conflicting with the target module.
+似た仕組みがimportやaliaseにもあります．そのため，マクロはマクロ対象のモジュールと競合せず，マクロが書かれているモジュールの仕様で動けることが保証されています．
 
-## 5.4 Private macros
+## 5.4 プライベートマクロ
 
-Elixir also supports private macros via `defmacrop`. As private functions, these macros are only available inside the module that defines them, and only at compilation time. A common use case for private macros is to define guards that are frequently used in the same module:
+`defmacrop`でプライベートマクロを作ることもできます．プライベートな関数と同じように，定義されたモジュールの中でコンパイルのときしか使えません．プライベートマクロの一般的な使いかたとして，同じモジュール内でガード節を頻繁に定義する場合があります:
 
 ```elixir
 defmodule MyMacros do
@@ -223,7 +223,7 @@ defmodule MyMacros do
 end
 ```
 
-It is important that the macro is defined before its usage. Failing to define a macro before its invocation will raise an error at runtime, since the macro won't be expanded and will be translated to a function call:
+マクロは使う場所より前で定義することが大切です．使う前に定義されていない場合，マクロが展開されず，関数呼び出しとみなされて実行時エラーが発生します:
 
 ```elixir
 defmodule MyMacros do
@@ -234,15 +234,15 @@ end
 MyMacros.four #=> ** (UndefinedFunctionError) undefined function: two/0
 ```
 
-## 5.5 Code execution
+## 5.5 コードの実行
 
-To finish our discussion about macros, we are going to briefly discuss how code execution works in Elixir. Code execution in Elixir is done in two steps:
+マクロについての話の最後となりますが，コードがエリクサーの中でどのように実行されるかをお話します．コードの実行は2つの段階を経て完了します．
 
-1) All the macros in the code are expanded recursively;
+1) コードの中の全てのマクロが再帰的に展開される;
 
-2) The expanded code is compiled to Erlang bytecode and executed
+2) 展開されたコードがErlangのバイトコードへコンパイルされ実行される
 
-This behavior is important to understand because it affects how we think about our code structure. Consider the following code:
+私たちがコードの構造をどう捉えるかに影響するため，この振舞いについて理解していることが重要です．以下のコードについて考えてみましょう:
 
 ```elixir
 defmodule Sample do
@@ -255,7 +255,7 @@ defmodule Sample do
 end
 ```
 
-The code above will define a function `full?` which will return true or false depending on the value of the environment variable `FULL` at **compilation time**. In order to execute this code, Elixir will first expand all macros. Considering that `defmodule` and `def` are macros, the code will expand to something like:
+上のコードは*コンパイル時に*環境変数`FULL`の値によってtrueかfalseを返す関数`full?`を定義しています．このコードを順序立てて動かしてみると，エリクサーは最初に全てのマクロを展開します．`defmodule`や`def`について考えてみると，これらもマクロなのでコードは次のように展開されます:
 
 ```elixir
 :elixir_module.store Sample, fn ->
@@ -267,13 +267,13 @@ The code above will define a function `full?` which will return true or false de
 end
 ```
 
-This code will then be executed, define a module `Foo` and store the appropriate function based on the value of the environment variable `FULL`. We achieve this by using the modules `:elixir_module` and `:elixir_def`, which are Elixir internal modules written in Erlang.
+このコードは実行されたとき，モジュール`Foo`の定義と環境変数`FULL`の値を元にした適切な関数を記憶します．これはErlangで書かれたエリクサーの内部モジュール`:elixir_module`と`:elixir_def`を使って行なわれます．
 
-There are two lessons to take away from this example:
+この例から次へ進むための2つ課題があります:
 
-1) a macro is always expanded, regardless if it is inside a `case` branch that won't actually match when executed;
+1) `case`分岐に実行時に絶対に通らない部分があるとしても，マクロは常に展開されます;
 
-2) we cannot invoke a function or macro just after it is defined in a module. For example, consider:
+2) モジュール内で関数やマクロを定義された後でも呼び出すことができません．例えばこのようなケース:
 
 ```elixir
 defmodule Sample do
@@ -282,7 +282,7 @@ defmodule Sample do
 end
 ```
 
-  The example above will fail because it translates to:
+  この例は以下のように解釈されるので失敗します:
 
 ```elixir
 :elixir_module.store Sample, fn ->
@@ -291,10 +291,10 @@ end
 end
 ```
 
-At the moment the module is being defined, there isn't **yet** a function named `full?` defined in the module, so `IO.puts full?` will cause the compilation to fail.
+モジュールが定義されるとき，モジュールには名前が`full?`の関数が**まだ**定義されていないため，`IO.puts full?`でコンパイルが失敗します．
 
-## 5.6 Don't write macros
+## 5.6 マクロ書くべからず
 
-Although macros are a powerful construct, the first rule of the macro club is **don't write macros**. Macros are harder to write than ordinary Elixir functions, and it's considered to be bad style to use them when they're not necessary. Elixir already provides elegant mechanisms to write your every day code and macros should be saved as last resort.
+マクロは強力な構成体であるにもかかわらず，マクロクラブの最初のルールは**マクロ書くべからず**です．マクロは普通の関数に比べると書くのが大変で，必要がないのに使うのは筋が悪いと考えられています．あなたが毎日書くようなコードへのうまい解決方法は既に提供されています．マクロは最後の手段としてとっておくべきです．
 
-With those lessons, we finish our introduction to macros. Next, let's move to the next chapter which will discuss several topics such as documentation, partial application and others.
+これらの戒めを最後にしてマクロの紹介は終わりです．次の章でドキュメンテーションや部分的なアプリケーション，その他のちょっとしたトピックについて話しましょう．
